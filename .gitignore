@@ -4,6 +4,10 @@
 # JDT-specific (Eclipse Java Development Tools)     
 .classpath
 
+# unnecessary folders
+/.settings
+/build
+
 # Compiled class file
 *.class
 
@@ -17,7 +21,6 @@
 .mtj.tmp/
 
 # Package Files #
-*.jar
 *.war
 *.nar
 *.ear
