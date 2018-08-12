@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Ruta">
+
+	<resultMap type="ruta" id="rutaRM">
+		<result property="codigo" column="cod_hoj_rut" />
+		<result property="bodega.codigo" column="cod_bod" />
+		<result property="unidadChofer.unidad.numeroPlaca" column="num_plac_unid" />
+		<result property="unidadChofer.unidad.numeroSoat" column="num_soat_unid" />
+		<result property="unidadChofer.chofer.nombres" column="nom_chof" />
+		<result property="unidadChofer.chofer.apellidos" column="ape_chof" />
+		<result property="fechaDespacho" column="fec_desp_hoj_rut" />
+	</resultMap>
+	
+	<select id="getRuta" parameterType="ruta" resultMap="rutaRM" statementType="CALLABLE">
+	{ call sp_ws_obtener_ruta(
+		#{unidadChofer.chofer.numeroBrevete,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{fechaDespacho,javaType=java.util.Date,jdbcType=DATE,mode=IN}
+	)
+	}
+	</select>
+	
+	<resultMap type="detalleRuta" id="detallesRutaRM">
+		<result property="ordenDespachoPedido" column="orden" />
+		<result property="pedido.codigo" column="_pedido" />
+		<result property="destinatario" column="destinatario" />
+		<result property="domicilio" column="domicilio" />
+		<result property="horario" column="horario" />
+		<result property="estado" column="estado" />
+	</resultMap>
+	
+	<select id="detallesRuta" resultMap="detallesRutaRM" statementType="CALLABLE" >
+		call sp_ws_obtener_detalle_ruta( 
+			#{codigoRuta,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</select>
+	
+	<resultMap id="estadoRM" type="estadoPedido">
+		<result property="nombre" column="est_ped" />
+		<result property="porcentaje" column="porc_est_ped" />
+	</resultMap>
+	
+	<select id="estado" parameterType="estadoPedidoParam" resultMap="estadoRM" statementType="CALLABLE">
+		call sp_get_desp_ped_unid( 
+			#{codigoRuta,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{codigoRespuesta,javaType=Integer,jdbcType=INTEGER,mode=OUT},
+        	#{mensajeRespuesta,javaType=String,jdbcType=VARCHAR,mode=OUT}
+		)
+	</select>
+	
+	<resultMap type="detallePedido" id="detallePedidoRM">
+		<result property="producto.codigo" column="cod_prod" />
+		<result property="producto.nombre" column="nom_prod" />
+		<result property="cantidadProducto" column="cant_prod" />
+	</resultMap>
+	
+	<select id="detallesPedido" parameterType="detallePedido" resultMap="detallePedidoRM" statementType="CALLABLE">
+		call sp_ws_describir_pedido(
+			#{pedido.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{bodega.codigo,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</select>
+	
+	<resultMap type="motivo" id="motivoRM">
+		<result property="codigo" column="codigo" />
+		<result property="descripcion" column="descripcion" />
+		<result property="categoria" column="categoria" />
+	</resultMap>
+	
+	<select id="motivos" resultMap="motivoRM" statementType="CALLABLE">
+	call sp_ws_listar_motivos (
+		#{categoria,javaType=String,jdbcType=VARCHAR,mode=IN}
+	)
+	</select>
+	
+	<resultMap type="chofer" id="choferRM">
+		<result property="numeroBrevete" column="num_brev_chof" />
+		<result property="nombres" column="nom_chof" />
+		<result property="apellidos" column="ape_chof" />
+		<result property="telefono" column="telf_chof" />
+		<result property="email" column="email_chof" />
+	</resultMap>
+	
+	<select id="choferes" resultMap="choferRM" statementType="CALLABLE">
+	call sp_ws_obtener_choferes ()
+	</select>
+	
+	<insert id="atencion" 
+		parameterType="detalleRutaParam" statementType="CALLABLE">
+	{ call sp_ws_registrar_atencion(
+        #{codigoRuta,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{detalle.pedido.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{detalle.pedido.numeroVerificacion,javaType=java.lang.Integer,jdbcType=INTEGER,mode=IN},
+        #{detalle.fechaPactadaDespacho,javaType=java.util.Date,jdbcType=DATETIMEOFFSET,mode=IN},
+        #{detalle.latGPSDespachoPedido,javaType=java.lang.Double,jdbcType=DECIMAL,mode=IN},
+        #{detalle.longGPSDespachoPedido,javaType=java.lang.Double,jdbcType=DECIMAL,mode=IN},
+        #{detalle.fotoDespachoPedido,javaType=String,jdbcType=BLOB,mode=IN},
+        #{codigoRespuesta,javaType=Integer,jdbcType=INTEGER,mode=OUT},
+        #{mensajeRespuesta,javaType=String,jdbcType=VARCHAR,mode=OUT}
+    )}
+	</insert>
+	
+	<insert id="incumplimiento" 
+		parameterType="detalleRutaParam" statementType="CALLABLE">
+	{ call sp_ws_registrar_incumplimiento(
+        #{codigoRuta,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{detalle.pedido.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{detalle.motivo.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+        #{detalle.fechaNoCumplimientoDespacho,javaType=java.util.Date,jdbcType=DATETIMEOFFSET,mode=IN},
+        #{detalle.latGPSDespachoPedido,javaType=java.lang.Double,jdbcType=DECIMAL,mode=IN},
+        #{detalle.longGPSDespachoPedido,javaType=java.lang.Double,jdbcType=DECIMAL,mode=IN},
+        #{detalle.fotoDespachoPedido,javaType=String,jdbcType=BLOB,mode=IN}
+    )}
+	</insert>
+	
+	<select id="imagen" parameterType="detalleRutaParam" resultType="String">
+		SELECT fot_desp_ped FROM tb_detalle_hoja_ruta 
+		WHERE
+		cod_hoj_rut = #{codigoRuta}
+		AND
+		cod_ped = #{detalle.pedido.codigo}
+	</select>
+</mapper>

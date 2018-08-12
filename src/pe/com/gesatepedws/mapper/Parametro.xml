@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Parametro">
+	<resultMap id="parametrosRM" type="parametro">
+		<result property="codigo" column="cod_param"/>
+		<result property="nombre" column="nom_param"/>
+		<result property="descripcion" column="desc_param"/>
+		<result property="valor" column="val_param"/>
+	</resultMap>
+
+	<select id="listarParametros"
+		resultMap="parametrosRM" statementType="CALLABLE">
+		call sp_obtener_parametros()
+	</select>
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Pedido">
+	<resultMap id="pedidosRM" type="pedido">
+		<id property="codigo" column="cod_ped"/>
+		<result property="cliente.codigo" column="cod_cli"/>
+		<result property="fechaRetiroTienda" column="fec_ret_tiend"/>
+		<result property="fechadespacho" column="fec_desp_ped"/>
+		<result property="fechaReprogramacion" column="fec_repro_ped"/>
+		<result property="fechaCancelacion" column="fec_canc_ped"/>
+		<result property="fechaDevolucionPed" column="fec_devo_ped"/>
+		
+		
+		
+		<result property="direccionDespachoPedido" column="dir_desp_ped"/>
+		<result property="distritoDespacho.codigo" column="cod_dist"/>
+		<result property="distritoDespacho.nombre" column="nom_dist"/>
+		
+		<result property="tiendaDespacho.codigo" column="cod_tiend_desp"/>
+		<result property="tiendaDespacho.direccion" column="tieDespacho"/>
+		<result property="tiendaDespacho.distrito.codigo" column="tieDespachoDist"/>
+		
+		<result property="tiendaDevolucion.codigo" column="cod_tiend_devo"/>
+		<result property="tiendaDevolucion.direccion" column="tieDevol"/>
+		<result property="tiendaDevolucion.distrito.codigo" column="tieDevolDist"/>
+		
+		<result property="cliente.codigo" column="cliente"/>
+		<result property="cliente.nombres" column="clienteNombres"/>
+		<result property="cliente.apellidos" column="clienteApellidos"/>
+		<result property="cliente.direccion" column="clienteDireccion"/>
+		<result property="cliente.distrito.codigo" column="clienteDireccionDist"/>
+		
+		<collection property="detalles" ofType="DetallePedido">
+			<result property="bodega.codigo" column="cod_bod"/>
+			<result property="cantidadProducto" column="cant_prod"/>
+			<result property="producto.codigo" column="cod_prod"/>
+			<result property="producto.volumen" column="vol_prod"/>
+			<result property="producto.peso" column="pes_prod"/>
+		</collection>
+	</resultMap>
+	
+	<select id="detalleRuta" resultMap="pedidosRM" statementType="CALLABLE" >
+		call sp_ws_obtener_detalle_ruta( 
+			#{codigoRuta,javaType=java.util.Date,jdbcType=DATE,mode=IN}
+		)
+	</select>
+	
+</mapper>
