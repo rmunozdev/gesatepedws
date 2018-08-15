@@ -12,6 +12,8 @@
         <typeAlias alias="detallePedido" type="pe.com.gesatepedws.model.DetallePedido" />
         <typeAlias alias="producto" type="pe.com.gesatepedws.model.Producto" />
         <typeAlias alias="bodega" type="pe.com.gesatepedws.model.Bodega" />
+        <typeAlias alias="tienda" type="pe.com.gesatepedws.model.Tienda" />
+        <typeAlias alias="distrito" type="pe.com.gesatepedws.model.Distrito" />
         <typeAlias alias="departamento" type="pe.com.gesatepedws.model.Departamento" />
         <typeAlias alias="parametro" type="pe.com.gesatepedws.model.Parametro" />
         <typeAlias alias="ruta" type="pe.com.gesatepedws.model.Ruta" />
@@ -28,5 +30,11 @@
 	
     <mappers>
         <mapper resource="pe/com/gesatepedws/mapper/Ruta.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Pedido.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Cliente.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Producto.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Bodega.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Distrito.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/Tienda.xml" />
     </mappers>
 </configuration>

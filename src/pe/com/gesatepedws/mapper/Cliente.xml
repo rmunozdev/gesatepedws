@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Cliente">
+	<resultMap id="clienteRM" type="cliente">
+		<result property="codigo" column="cod_cli"/>
+		<result property="nombres" column="nom_cli"/>
+		<result property="apellidos" column="ape_cli"/>
+		<result property="numeroDNI" column="num_dni_cli"/>
+		<result property="telefono" column="telf_cli"/>
+		<result property="email" column="email_cli"/>
+		<result property="direccion" column="dir_cli"/>
+		<result property="distrito.codigo" column="cod_dist"/>
+	</resultMap>
+
+	<select id="buscar"
+		resultMap="clienteRM" parameterType="String">
+		select *
+		from tb_cliente
+		where cod_cli = #{codigoCliente}
+	</select>
+	
+	<select id="buscarPorDNI"
+		resultMap="clienteRM" parameterType="String">
+		select *
+		from tb_cliente
+		where num_dni_cli = #{numeroDNI}
+	</select>
+	
+	
+</mapper>

@@ -5,6 +5,7 @@ public class Bodega {
 	private String codigo;
 	private String nombre;
 	private String direccion;
+	private String email;
 	private Distrito distrito;
 	
 	public Bodega() {
@@ -53,5 +54,13 @@ public class Bodega {
 		
 		return this.codigo.equals(bodega.codigo);
 		
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 }

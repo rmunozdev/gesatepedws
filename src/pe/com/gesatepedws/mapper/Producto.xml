@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Producto">
+	
+	<resultMap type="producto" id="productoRM">
+		<result property="codigo" column="cod_prod"/>
+		<result property="nombre" column="nom_prod"/>
+		<result property="marca" column="marc_prod"/>
+		<result property="precioUnitario" column="prec_unit_prod"/>
+		<result property="volumen" column="vol_prod"/>
+		<result property="peso" column="pes_prod"/>
+		<result property="tipoProducto.codigo" column="cod_tip_prod"/>
+	</resultMap>
+	
+	<select id="buscar"
+		resultMap="productoRM" parameterType="String">
+		select *
+		from tb_producto
+		where cod_prod = #{codigoProducto}
+	</select>
+</mapper>

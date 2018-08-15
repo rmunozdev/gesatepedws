@@ -1,14 +1,35 @@
 package pe.com.gesatepedws.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize
 public class DetallePedido {
 
 	private Pedido pedido;
+	
 	private Producto producto;
+	
+	@JsonProperty("cantidadProducto")
 	private Integer cantidadProducto;
 	private Integer cantidadProductoDefectuoso;
 	private String observacionProductoDefectuoso;
 	private Integer cantidadProductoNoUbicable;
 	private Bodega bodega;
+	
+	@JsonProperty("codigoProducto")
+	public void setCodigoProducto(String codigo) {
+		this.producto = new Producto();
+		this.producto.setCodigo(codigo);
+	}
+	
+	@JsonProperty("codigoBodega")
+	public void setCodigoBodega(String codigo) {
+		this.bodega = new Bodega();
+		this.bodega.setCodigo(codigo);
+	}
 	
 	public static class Builder {
 		private Pedido pedido;

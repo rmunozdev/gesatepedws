@@ -208,3 +208,114 @@ BEGIN
     
 END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_reservar_pedido`(
+	pi_cod_ped VARCHAR(10),
+
+	pi_fec_sol_ped datetime,
+	pi_num_reserv_ped int(11),
+	pi_fec_vent_ped datetime,
+	pi_fec_desp_ped date,
+    
+	 -- DATOS DE DESTINO
+	pi_dir_desp_ped VARCHAR(100),
+	pi_cod_dist_desp_ped VARCHAR(10),
+    
+	 -- CAMPOS PARA CLIENTE (ACTUALIZAN)
+	pi_cod_cli VARCHAR(10),
+	pi_nom_cli VARCHAR(50),
+	pi_ape_cli VARCHAR(50),
+	pi_num_dni_cli VARCHAR(8),
+	pi_telf_cli VARCHAR(9),
+	pi_email_cli VARCHAR(50),
+	pi_dir_cli VARCHAR(100),
+	pi_cod_dist VARCHAR(10),
+    
+	 -- CAMPOS PARA TIENDA (RETIRO O REPOSICION)
+	pi_cod_tiend_desp VARCHAR(10),
+	pi_fec_ret_tiend DATE
+
+)
+BEGIN
+	DECLARE cliente_count INT default 0;
+    DECLARE p_num_verif_ped INT(11) default 0;
+    select num_verif_ped into p_num_verif_ped from tb_pedido order by num_verif_ped DESC LIMIT 1;
+	
+    IF(p_num_verif_ped IS NULL) THEN 
+		SET p_num_verif_ped = 1000;
+    ELSE
+		SET p_num_verif_ped = p_num_verif_ped + 1;
+    END IF;
+    
+     -- Se inserta cliente solo si no existe
+    
+    SELECT COUNT(cod_cli) into cliente_count from tb_cliente where cod_cli = pi_cod_cli;
+    
+    IF (cliente_count > 0) THEN
+    
+    UPDATE tb_cliente SET 
+		nom_cli = IFNULL(pi_nom_cli,nom_cli),
+        ape_cli = IFNULL(pi_ape_cli,ape_cli),
+        num_dni_cli = IFNULL(pi_num_dni_cli,num_dni_cli),
+        telf_cli = IFNULL(pi_telf_cli,telf_cli),
+        email_cli = IFNULL(pi_email_cli,email_cli),
+        dir_cli = IFNULL(pi_dir_cli,dir_cli),
+        cod_dist = IFNULL(pi_cod_dist,cod_dist)
+	WHERE cod_cli = pi_cod_cli;
+    
+    ELSE 
+    
+     INSERT INTO tb_cliente (
+		cod_cli,
+        nom_cli,
+        ape_cli,
+        num_dni_cli,
+        telf_cli,
+        email_cli,
+        dir_cli,
+        cod_dist
+    ) VALUES (
+		pi_cod_cli,
+        pi_nom_cli,
+        pi_ape_cli,
+        pi_num_dni_cli,
+        pi_telf_cli,
+        pi_email_cli,
+        pi_dir_cli,
+        pi_cod_dist
+    );
+    
+    END IF;
+    
+    
+    -- Se construye pedido para cliente
+	INSERT INTO tb_pedido (
+		cod_ped,
+        cod_cli,
+        fec_sol_ped,
+        num_reserv_ped,
+        num_verif_ped,
+        fec_vent_ped,
+        fec_desp_ped,
+        dir_desp_ped,
+        cod_dist_desp_ped,
+        cod_tiend_desp,
+        fec_ret_tiend
+    ) VALUES (
+		pi_cod_ped,
+        pi_cod_cli,
+        pi_fec_sol_ped,
+        pi_num_reserv_ped,
+        p_num_verif_ped,
+        pi_fec_vent_ped,
+        pi_fec_desp_ped,
+        
+        pi_dir_desp_ped,
+        pi_cod_dist_desp_ped,
+        pi_cod_tiend_desp,
+        pi_fec_ret_tiend
+    );
+
+END$$
+DELIMITER ;

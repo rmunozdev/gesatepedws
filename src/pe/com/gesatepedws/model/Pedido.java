@@ -3,15 +3,34 @@ package pe.com.gesatepedws.model;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize
 public class Pedido {
 
+	@JsonProperty("codigoPedido")
 	private String codigo;
+	
+	@JsonProperty("cliente")
 	private Cliente cliente;
+	
+	@JsonProperty("numeroReserva")
 	private Integer numeroReserva;
+	
 	private Integer numeroVerificacion;
+	
+	@JsonProperty("fechaSolicitud")
 	private Date fechaSolicitud;
+	
+	@JsonProperty("fechaVentaPedido")
 	private Date fechaVenta;
+	
+	@JsonProperty("fechaDespacho")
 	private Date fechadespacho;
+	
 	private Date fechaRetiroTienda;
 	private Date fechaRecojoTienda;
 	private Date fechaReprogramacion;
@@ -19,13 +38,25 @@ public class Pedido {
 	private Date fechaDevolucionPed;
 	private String codigoMotivo;
 	
+	@JsonProperty("direccionDespacho")
 	private String direccionDespachoPedido;
+	
 	private Distrito distritoDespacho;
 	
+	@JsonProperty("codigoDistritoDespacho")
+	public void setCodigoDistrito(String codigo) {
+		this.distritoDespacho = new Distrito();
+		this.distritoDespacho.setCodigo(codigo);
+	}
+	
+	@JsonProperty("tienda")
 	private Tienda tiendaDespacho;
+	
 	private Tienda tiendaDevolucion;
 	
+	@JsonProperty("listaDetallePedido")
 	private List<DetallePedido> detalles;
+	
 	private DetallePedido detalle;
 	
 	public static class Builder {

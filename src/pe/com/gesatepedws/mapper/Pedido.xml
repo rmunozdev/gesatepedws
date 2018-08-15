@@ -3,48 +3,56 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="Pedido">
-	<resultMap id="pedidosRM" type="pedido">
-		<id property="codigo" column="cod_ped"/>
-		<result property="cliente.codigo" column="cod_cli"/>
-		<result property="fechaRetiroTienda" column="fec_ret_tiend"/>
-		<result property="fechadespacho" column="fec_desp_ped"/>
-		<result property="fechaReprogramacion" column="fec_repro_ped"/>
-		<result property="fechaCancelacion" column="fec_canc_ped"/>
-		<result property="fechaDevolucionPed" column="fec_devo_ped"/>
-		
-		
-		
-		<result property="direccionDespachoPedido" column="dir_desp_ped"/>
-		<result property="distritoDespacho.codigo" column="cod_dist"/>
-		<result property="distritoDespacho.nombre" column="nom_dist"/>
-		
-		<result property="tiendaDespacho.codigo" column="cod_tiend_desp"/>
-		<result property="tiendaDespacho.direccion" column="tieDespacho"/>
-		<result property="tiendaDespacho.distrito.codigo" column="tieDespachoDist"/>
-		
-		<result property="tiendaDevolucion.codigo" column="cod_tiend_devo"/>
-		<result property="tiendaDevolucion.direccion" column="tieDevol"/>
-		<result property="tiendaDevolucion.distrito.codigo" column="tieDevolDist"/>
-		
-		<result property="cliente.codigo" column="cliente"/>
-		<result property="cliente.nombres" column="clienteNombres"/>
-		<result property="cliente.apellidos" column="clienteApellidos"/>
-		<result property="cliente.direccion" column="clienteDireccion"/>
-		<result property="cliente.distrito.codigo" column="clienteDireccionDist"/>
-		
-		<collection property="detalles" ofType="DetallePedido">
-			<result property="bodega.codigo" column="cod_bod"/>
-			<result property="cantidadProducto" column="cant_prod"/>
-			<result property="producto.codigo" column="cod_prod"/>
-			<result property="producto.volumen" column="vol_prod"/>
-			<result property="producto.peso" column="pes_prod"/>
-		</collection>
+	<insert id="reservar" parameterType="pedido" statementType="CALLABLE" >
+		call sp_ws_reservar_pedido( 
+			#{codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{fechaSolicitud,javaType=java.util.Date,jdbcType=DATETIMEOFFSET,mode=IN},
+			#{numeroReserva,javaType=Integer,jdbcType=INTEGER,mode=IN},
+			#{fechaVenta,javaType=java.util.Date,jdbcType=DATETIMEOFFSET,mode=IN},
+			#{fechadespacho,javaType=java.util.Date,jdbcType=DATE,mode=IN},
+			#{direccionDespachoPedido,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{distritoDespacho.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			
+			#{cliente.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.nombres,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.apellidos,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.numeroDNI,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.telefono,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.email,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.direccion,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{cliente.distrito.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			
+			#{tiendaDespacho.codigo,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{fechaRetiroTienda,javaType=java.util.Date,jdbcType=DATE,mode=IN}
+		)
+	</insert>
+	
+	<insert id="agregarDetallesPedido" parameterType="java.util.List">
+		INSERT INTO tb_detalle_pedido (
+			cod_ped,
+			cod_prod,
+			cant_prod,
+			cod_bod
+		) VALUES
+		<foreach collection="list" item="detallePedido" index="index"
+			open="(" separator="),(" close=")">
+			#{detallePedido.pedido.codigo, javaType=String,jdbcType=VARCHAR},
+			#{detallePedido.producto.codigo, javaType=String,jdbcType=VARCHAR},
+			#{detallePedido.cantidadProducto, javaType=Integer,jdbcType=INTEGER},
+			#{detallePedido.bodega.codigo, javaType=String,jdbcType=VARCHAR}
+		</foreach>
+	
+	</insert>
+	
+	<resultMap type="pedido" id="pedidoRM">
+		<result property="codigo" column="cod_ped"/>
 	</resultMap>
 	
-	<select id="detalleRuta" resultMap="pedidosRM" statementType="CALLABLE" >
-		call sp_ws_obtener_detalle_ruta( 
-			#{codigoRuta,javaType=java.util.Date,jdbcType=DATE,mode=IN}
-		)
-	</select>
 	
+	<select id="buscarPorNumeroReserva"
+		resultMap="pedidoRM" parameterType="java.lang.Integer">
+		select *
+		from tb_pedido
+		where num_reserv_ped = #{numeroReserva}
+	</select>
 </mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Distrito">
+	
+	<resultMap type="distrito" id="bodegaRM">
+		<result property="codigo" column="cod_dist"/>
+		<result property="nombre" column="nom_dist"/>
+		<result property="provincia.codigo" column="cod_prov"/>
+		<result property="zona.codigo" column="cod_zon"/>
+	</resultMap>
+
+	<select id="buscar"
+		resultMap="bodegaRM" parameterType="String">
+		select *
+		from tb_distrito
+		where cod_dist = #{codigoDistrito}
+	</select>
+</mapper>
