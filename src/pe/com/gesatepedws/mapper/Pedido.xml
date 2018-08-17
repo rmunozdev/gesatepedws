@@ -27,21 +27,13 @@
 		)
 	</insert>
 	
-	<insert id="agregarDetallesPedido" parameterType="java.util.List">
-		INSERT INTO tb_detalle_pedido (
-			cod_ped,
-			cod_prod,
-			cant_prod,
-			cod_bod
-		) VALUES
-		<foreach collection="list" item="detallePedido" index="index"
-			open="(" separator="),(" close=")">
-			#{detallePedido.pedido.codigo, javaType=String,jdbcType=VARCHAR},
-			#{detallePedido.producto.codigo, javaType=String,jdbcType=VARCHAR},
-			#{detallePedido.cantidadProducto, javaType=Integer,jdbcType=INTEGER},
-			#{detallePedido.bodega.codigo, javaType=String,jdbcType=VARCHAR}
-		</foreach>
-	
+	<insert id="agregarDetallesPedido" parameterType="detallePedido" statementType="CALLABLE">
+		call sp_ws_registrar_detalle_pedido (
+			#{pedido.codigo, javaType=String,jdbcType=VARCHAR},
+			#{producto.codigo, javaType=String,jdbcType=VARCHAR},
+			#{cantidadProducto, javaType=Integer,jdbcType=INTEGER},
+			#{bodega.codigo, javaType=String,jdbcType=VARCHAR}
+		)
 	</insert>
 	
 	<resultMap type="pedido" id="pedidoRM">
@@ -55,4 +47,26 @@
 		from tb_pedido
 		where num_reserv_ped = #{numeroReserva}
 	</select>
+	
+	<select id="buscar" resultMap="pedidoRM" parameterType="String">
+		select * from tb_pedido where cod_ped = #{codigoPedido}
+	</select>
+	
+	<resultMap type="kardex" id="kardexRM">
+		<result property="producto.codigo"  column="cod_prod"/>
+		<result property="bodega.codigo"  column="cod_bod"/>
+		<result property="stockMinimo"  column="stk_min"/>
+		<result property="stockActual"  column="stk_act"/>
+		<result property="fechaActualizacionRegistro"  column="fec_act_reg"/>
+		<result property="producto.nombre" column="nom_prod"/>
+		<result property="producto.marca" column="marc_prod"/>
+		<result property="producto.precioUnitario" column="prec_unit_prod"/>
+	</resultMap>
+	
+	<select id="obtenerKardex"  parameterType="String"  resultMap="kardexRM" statementType="CALLABLE" >
+		call sp_ws_obtener_kardex(
+			#{codigoPedido,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</select>
+	
 </mapper>

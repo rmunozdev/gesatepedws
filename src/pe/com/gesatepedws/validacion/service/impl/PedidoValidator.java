@@ -22,18 +22,65 @@ public class PedidoValidator {
 				datasource);
 	}
 	
+	public PedidoValidator conCodigoPedidoOobligatorio() {
+		this.failMap.put("Debe ingresar el codigo de pedido", 
+				this.pedido.getCodigo() == null
+				|| this.pedido.getCodigo().isEmpty());
+		return this;
+	}
+	
+	public PedidoValidator conCodigoPedidoNoReutilizado() {
+		this.failMap.put("El pedido " + this.pedido.getCodigo() + " ya ha sido registrado previamente", 
+				!this.datasource.isCodigoPedidoDisponible(this.pedido.getCodigo()));
+		return this;
+	}
+	
 	public PedidoValidator conDatosDeClienteObligatorios() {
 		this.clienteValidator.conTodoObligatorio();
 		return this;
 	}
 	
-	public PedidoValidator conDatosDeClienteAdecuados() {
-		this.clienteValidator.conDatosAdecuados();
+	public PedidoValidator conNumeroDNIClienteAdecuado() {
+		this.clienteValidator.conNumeroDNIAdecuado();
 		return this;
 	}
 	
+	public PedidoValidator conNombresYApellidosClienteAdecuados() {
+		this.clienteValidator.conNombreAdecuado();
+		this.clienteValidator.conApellidoAdecuado();
+		return this;
+	}
+	
+	public PedidoValidator conEmailClienteAdecuado() {
+		this.clienteValidator.conEmailAdecuado();
+		return this;
+	}
+	
+	public PedidoValidator sinConflictoEmailCliente() {
+		this.clienteValidator.sinConflictoEmail();
+		return this;
+	}
+	
+	public PedidoValidator sinConflictoTelefonoCliente() {
+		this.clienteValidator.sinConflictoTelefono();
+		return this;
+	}
+	
+	public PedidoValidator conTelefonoClienteAdecuado() {
+		this.clienteValidator.conTelefonoAdecuado();
+		return this;
+	}
+	
+	public PedidoValidator conDireccionDeClienteAdecuada() {
+		this.clienteValidator.conDireccionAdecuada();
+		this.clienteValidator.conCodigoDistritoExistente();
+		return this;
+	}
+	
+
+	
 	public PedidoValidator conCodigoDeClienteObligatorio() {
-		this.failMap.put("Codigo de cliente requerido", 
+		this.failMap.put("Debe ingresar el codigo de cliente", 
 				this.pedido.getCliente() == null || 
 				this.pedido.getCliente().getCodigo() == null);
 		return this;
@@ -53,41 +100,48 @@ public class PedidoValidator {
 	}
 	
 	public PedidoValidator conFechaSolicitudObligatoria() {
-		this.failMap.put("Fecha de Solicitud requerida", 
+		this.failMap.put("Debe ingresar la fecha de Solicitud", 
 				this.pedido.getFechaSolicitud() == null);
 		return this;
 	}
 	
 	public PedidoValidator conFechaVentaObligatoria() {
-		this.failMap.put("Fecha de Venta requerida", 
+		this.failMap.put("Debe ingresar la fecha de Venta", 
 				this.pedido.getFechaVenta() == null);
 		return this;
 	}
 	
 	public PedidoValidator conFechaDespachoObligatoria() {
-		this.failMap.put("Fecha de despacho requerida", 
+		this.failMap.put("Debe ingresar la fecha de despacho", 
 				this.pedido.getFechadespacho() == null);
 		return this;
 	}
 	
-	public PedidoValidator conDireccionYDitritoDespachoObligatoria() {
-		this.failMap.put("Direccion y Distrito de despacho requerida", 
-				this.pedido.getDireccionDespachoPedido() == null
-				|| this.pedido.getDireccionDespachoPedido().isEmpty()
-				|| this.pedido.getDistritoDespacho() == null
-				|| this.pedido.getDistritoDespacho().getCodigo() == null
-				|| this.pedido.getDistritoDespacho().getCodigo().isEmpty()
-				);
+	public PedidoValidator conFechaDespachoAdecuada() {
+		if(this.pedido.getFechadespacho() != null) {
+			if(this.pedido.getFechaSolicitud() != null) {
+				//TODO Obtener espacio mínimo de tabla parámetros
+				this.failMap.put("Fecha de despacho debe ser minimo 24 horas después de la fecha de solicitud del pedido", 
+						(this.pedido.getFechadespacho().getTime() 
+								- this.pedido.getFechaSolicitud().getTime()) 
+						< 24 * 60 * 60 * 1000 );
+			} 
+			
+			if(this.pedido.getFechaVenta() != null) {
+				this.failMap.put("Fecha de despacho de pedido debe ser mayor a la fecha de venta del pedido", 
+						(this.pedido.getFechadespacho().before(this.pedido.getFechaVenta())));
+			}
+		}
 		return this;
 	}
 	
 	public PedidoValidator conTiendaDespachoYFechaRetiroCoherente() {
-		this.failMap.put("Fecha de retiro requerida", 
+		this.failMap.put("Debe ingresar la fecha de retiro", 
 				this.pedido.getTiendaDespacho() != null
 				&& (this.pedido.getFechaRetiroTienda() == null)
 		);
 		
-		this.failMap.put("Tienda de despacho requerida", 
+		this.failMap.put("Debe ingresar la tienda de despacho", 
 				this.pedido.getFechaRetiroTienda() != null 
 				&& (this.pedido.getTiendaDespacho() == null 
 					|| this.pedido.getTiendaDespacho().getCodigo() == null
@@ -96,12 +150,36 @@ public class PedidoValidator {
 		return this;
 	}
 	
+	public PedidoValidator conDireccionYDistritoDespachoAdecuados() {
+		//Se ignora validacion si es retiro en tiend
+		if(this.pedido.getFechaRetiroTienda()!=null) {
+			return this;
+		}
+		
+		if(this.pedido.getDireccionDespachoPedido() != null) {
+			this.failMap.put("Direccion de despacho mínimo un caracter", 
+					this.pedido.getDireccionDespachoPedido().isEmpty());
+			
+			this.failMap.put("Debe ingresar el distrito de despacho", 
+					this.pedido.getDistritoDespacho() == null 
+					|| this.pedido.getDistritoDespacho().getCodigo() == null
+					|| this.pedido.getDistritoDespacho().getCodigo().isEmpty());
+		}
+		
+		this.failMap.put("Debe ingresar la direccion de despacho", 
+				this.pedido.getDistritoDespacho() != null 
+				&& (this.pedido.getDireccionDespachoPedido() == null
+					|| this.pedido.getDireccionDespachoPedido().isEmpty()
+						));
+		return this;
+	}
+	
 	public PedidoValidator conCodigoDistritoExistente() {
 		if( this.pedido.getDistritoDespacho() != null
 				&& this.pedido.getDistritoDespacho().getCodigo() != null
 				&& !this.pedido.getDistritoDespacho().getCodigo().isEmpty()) {
-			this.failMap.put("Codigo de distrito " + 
-					this.pedido.getDistritoDespacho().getCodigo() + " no existe", 
+			this.failMap.put("El distrito de despacho del pedido " + 
+					this.pedido.getDistritoDespacho().getCodigo() + " no se encuentra registrado", 
 					!this.datasource.existeDistrito(
 							this.pedido.getDistritoDespacho().getCodigo()));
 		}
@@ -112,9 +190,9 @@ public class PedidoValidator {
 		if(this.pedido.getTiendaDespacho() != null 
 					&& this.pedido.getTiendaDespacho().getCodigo() != null
 					&& !this.pedido.getTiendaDespacho().getCodigo().isEmpty()) {
-			this.failMap.put("Codigo de tienda " 
+			this.failMap.put("La tienda " 
 					+ this.pedido.getTiendaDespacho().getCodigo() 
-					+ " no existe", 
+					+ " no se encuentra registrada.", 
 					!this.datasource.existeTienda(
 							this.pedido.getTiendaDespacho().getCodigo()));
 		}
@@ -123,7 +201,7 @@ public class PedidoValidator {
 	
 	public PedidoValidator conAlMenosUnDetalle() {
 		System.out.println("Check detalles");
-		this.failMap.put("Se requiere al menos un detalle",
+		this.failMap.put("Debe ingresar al menos un detalle",
 				this.pedido.getDetalles() == null
 				|| this.pedido.getDetalles().isEmpty());
 		return this;

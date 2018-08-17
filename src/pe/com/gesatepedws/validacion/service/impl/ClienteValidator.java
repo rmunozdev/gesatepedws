@@ -18,7 +18,7 @@ public class ClienteValidator {
 		this.failMap = new HashMap<>();
 	}
 	
-	public ClienteValidator conDatosAdecuados() {
+	public ClienteValidator conTodosLosDatosAdecuados() {
 		this
 			.conNombreAdecuado()
 			.conApellidoAdecuado()
@@ -44,42 +44,42 @@ public class ClienteValidator {
 	}
 	
 	public ClienteValidator conDNIObligatorio() {
-		this.failMap.put("DNI requerido", 
+		this.failMap.put("Debe ingresar DNI de cliente", 
 				this.cliente.getNumeroDNI() == null 
 				|| this.cliente.getNumeroDNI().isEmpty());
 		return this;
 	}
 	
 	public ClienteValidator conNombreObligatorio() {
-		this.failMap.put("Nombre de cliente requerido", 
+		this.failMap.put("Debe ingresar Nombre de cliente", 
 				this.cliente.getNombres() == null 
 				|| this.cliente.getNombres().isEmpty());
 		return this;
 	}
 	
 	public ClienteValidator conApellidoObligatorio() {
-		this.failMap.put("Apellido de cliente requerido", 
+		this.failMap.put("Debe ingresar apellido de cliente", 
 				this.cliente.getApellidos() == null 
 				|| this.cliente.getApellidos().isEmpty());
 		return this;
 	}
 	
 	public ClienteValidator conEmailObligatorio() {
-		this.failMap.put("Email de cliente requerido", 
+		this.failMap.put("Debe ingresar email de cliente", 
 				this.cliente.getEmail() == null 
 				|| this.cliente.getEmail().isEmpty());
 		return this;
 	}
 	
 	public ClienteValidator conTelefonoObligatorio() {
-		this.failMap.put("Email de cliente requerido", 
+		this.failMap.put("Debe ingresar teléfono de cliente", 
 				this.cliente.getTelefono() == null 
 				|| this.cliente.getTelefono().isEmpty());
 		return this;
 	}
 	
 	public ClienteValidator conDireccionYDistritoObligatorio() {
-		this.failMap.put("Direccion y distrito de cliente requerido", 
+		this.failMap.put("Debe ingresar la direccion y distrito de cliente", 
 				this.cliente.getDireccion() == null
 				|| this.cliente.getDireccion().isEmpty() 
 				|| this.cliente.getDistrito() == null
@@ -146,11 +146,31 @@ public class ClienteValidator {
 		if(this.cliente.getDistrito() != null
 				&& this.cliente.getDistrito().getCodigo() != null
 				& !this.cliente.getDistrito().getCodigo().isEmpty()) {
-			this.failMap.put("Distrito con codigo " 
-				+ this.cliente.getDistrito().getCodigo()
-				+ " no existe",  
+			this.failMap.put("El distrito de domicilio del cliente no se encuentra registrado",  
 				!this.datasource.existeDistrito(
 						this.cliente.getDistrito().getCodigo()));
+		}
+		return this;
+	}
+	
+	public ClienteValidator sinConflictoEmail() {
+		if(this.cliente.getEmail()!= null 
+				&& !this.cliente.getEmail().isEmpty()) {
+			this.failMap.put("Email " 
+				+ this.cliente.getEmail() 
+				+ " está siendo usado por otro usuario", 
+				this.datasource.conflictoEmail(this.cliente.getEmail(), this.cliente.getCodigo()));
+		}
+		return this;
+	}
+	
+	public ClienteValidator sinConflictoTelefono() {
+		if(this.cliente.getTelefono()!= null 
+				&& !this.cliente.getTelefono().isEmpty()) {
+			this.failMap.put("Telefono " 
+				+ this.cliente.getTelefono() 
+				+ " está siendo usado por otro usuario", 
+				this.datasource.conflictoTelefono(this.cliente.getTelefono(), this.cliente.getCodigo()));
 		}
 		return this;
 	}

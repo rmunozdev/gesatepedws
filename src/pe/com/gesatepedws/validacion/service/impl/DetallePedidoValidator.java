@@ -31,7 +31,7 @@ public class DetallePedidoValidator {
 	}
 	
 	public DetallePedidoValidator conCodigoProductoObligatorio() {
-		failMap.put("Codigo de Producto obligatorio", 
+		failMap.put("Debe ingresar el codigo de Producto", 
 				this.detalle.getProducto() == null
 				|| this.detalle.getProducto().getCodigo() == null
 				|| this.detalle.getProducto().getCodigo().isEmpty());
@@ -39,7 +39,7 @@ public class DetallePedidoValidator {
 	}
 	
 	public DetallePedidoValidator conCantidadProductoObligatorio() {
-		failMap.put("Cantidad de producto obligatoria", 
+		failMap.put("Debe ingresar la cantidad de producto", 
 				this.detalle.getCantidadProducto() == null);
 		return this;
 	}
@@ -56,13 +56,13 @@ public class DetallePedidoValidator {
 	
 	public DetallePedidoValidator conCantidadProductoMinima() {
 		if(this.detalle.getCantidadProducto() != null) {
-			failMap.put("Cantidad de producto minimo 1 unidad", this.detalle.getCantidadProducto() < 1);
+			failMap.put("Cantidad de producto debe ser mayor a cero", this.detalle.getCantidadProducto() < 1);
 		}
 		return this;
 	}
 	
 	public DetallePedidoValidator conCodigoBodegaObligatorio() {
-		failMap.put("Código de bodega obligatorio", 
+		failMap.put("Debe ingresar el código de bodega", 
 				this.detalle.getBodega() == null 
 				|| this.detalle.getBodega().getCodigo() == null 
 				|| this.detalle.getBodega().getCodigo().isEmpty());
@@ -73,7 +73,7 @@ public class DetallePedidoValidator {
 		if(this.detalle.getBodega() != null 
 				&& this.detalle.getBodega().getCodigo() != null 
 				&& !this.detalle.getBodega().getCodigo().isEmpty()) {
-			failMap.put("Codigo de bodega " + this.detalle.getBodega().getCodigo() + " no existe", 
+			failMap.put("La bodega o nodo " + this.detalle.getBodega().getCodigo() + " no se encuentra registrada", 
 					!this.datasource.existeBodega(
 							this.detalle.getBodega().getCodigo()));
 		}

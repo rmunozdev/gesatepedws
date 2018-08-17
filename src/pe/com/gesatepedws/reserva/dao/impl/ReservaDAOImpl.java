@@ -1,10 +1,16 @@
 package pe.com.gesatepedws.reserva.dao.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import pe.com.gesatepedws.model.Cliente;
+import pe.com.gesatepedws.model.DetallePedido;
+import pe.com.gesatepedws.model.Kardex;
 import pe.com.gesatepedws.model.Pedido;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 
@@ -22,7 +28,9 @@ public class ReservaDAOImpl implements ReservaDAO {
 	@Override
 	public boolean reservarPedido(Pedido pedido) {
 		this.gesatepedSession.insert("Pedido.reservar", pedido);
-		this.gesatepedSession.insert("Pedido.agregarDetallesPedido",pedido.getDetalles());
+		for(DetallePedido detalle : pedido.getDetalles()) {
+			this.gesatepedSession.insert("Pedido.agregarDetallesPedido",detalle);
+		}
 		return true;
 	}
 
@@ -54,6 +62,32 @@ public class ReservaDAOImpl implements ReservaDAO {
 	@Override
 	public boolean existeTienda(String codigoTienda) {
 		return !this.gesatepedSession.selectList("Tienda.buscar",codigoTienda).isEmpty();
+	}
+
+	@Override
+	public boolean conflictoEmail(String email, String codigoCliente) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("email", email);
+		params.put("codigoCliente", codigoCliente);
+		return !this.gesatepedSession.selectList("Cliente.buscarPorEmail",params).isEmpty();
+	}
+
+	@Override
+	public boolean conflictoTelefono(String telefono, String codigoCliente) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("telefono", telefono);
+		params.put("codigoCliente", codigoCliente);
+		return !this.gesatepedSession.selectList("Cliente.buscarPorTelefono",params).isEmpty();
+	}
+
+	@Override
+	public boolean isCodigoPedidoDisponible(String codigoPedido) {
+		return this.gesatepedSession.selectList("Pedido.buscar", codigoPedido).isEmpty();
+	}
+
+	@Override
+	public List<Kardex> obtenerKardex(String codigoPedido) {
+		return this.gesatepedSession.selectList("Pedido.obtenerKardex",codigoPedido);
 	}
 
 }

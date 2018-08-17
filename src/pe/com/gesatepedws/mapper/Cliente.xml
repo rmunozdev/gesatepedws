@@ -28,5 +28,23 @@
 		where num_dni_cli = #{numeroDNI}
 	</select>
 	
+	<select id="buscarPorEmail"
+		resultMap="clienteRM" parameterType="java.util.Map" statementType="CALLABLE">
+		call sp_ws_obtener_cliente_por_email(
+			#{codigoCliente,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{email,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+		
+	</select>
+	
+	<select id="buscarPorTelefono"
+		resultMap="clienteRM" parameterType="java.util.Map" statementType="CALLABLE">
+		call sp_ws_obtener_cliente_por_telefono(
+			#{codigoCliente,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{telefono,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+		
+	</select>
+	
 	
 </mapper>

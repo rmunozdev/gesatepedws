@@ -6,4 +6,5 @@ import pe.com.gesatepedws.model.extend.ReservaResponse;
 public interface ReservaService {
 	
 	public ReservaResponse reservarPedido(Pedido pedido);
+	
 }

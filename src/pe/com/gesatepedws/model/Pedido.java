@@ -3,6 +3,7 @@ package pe.com.gesatepedws.model;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -23,14 +24,17 @@ public class Pedido {
 	private Integer numeroVerificacion;
 	
 	@JsonProperty("fechaSolicitud")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm z")
 	private Date fechaSolicitud;
 	
 	@JsonProperty("fechaVentaPedido")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm z")
 	private Date fechaVenta;
 	
 	@JsonProperty("fechaDespacho")
 	private Date fechadespacho;
 	
+	@JsonProperty("fechaRetiro")
 	private Date fechaRetiroTienda;
 	private Date fechaRecojoTienda;
 	private Date fechaReprogramacion;

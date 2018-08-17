@@ -17,6 +17,6 @@
 		resultMap="tiendaRM" parameterType="String">
 		select *
 		from tb_tienda
-		where cod_bod = #{codigoBodega}
+		where cod_tiend = #{codigoTienda}
 	</select>
 </mapper>

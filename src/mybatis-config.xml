@@ -13,6 +13,7 @@
         <typeAlias alias="producto" type="pe.com.gesatepedws.model.Producto" />
         <typeAlias alias="bodega" type="pe.com.gesatepedws.model.Bodega" />
         <typeAlias alias="tienda" type="pe.com.gesatepedws.model.Tienda" />
+        <typeAlias alias="kardex" type="pe.com.gesatepedws.model.Kardex" />
         <typeAlias alias="distrito" type="pe.com.gesatepedws.model.Distrito" />
         <typeAlias alias="departamento" type="pe.com.gesatepedws.model.Departamento" />
         <typeAlias alias="parametro" type="pe.com.gesatepedws.model.Parametro" />
