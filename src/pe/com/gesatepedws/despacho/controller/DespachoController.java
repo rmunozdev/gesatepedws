@@ -50,9 +50,11 @@ public class DespachoController {
 	@GetMapping(path="/ruta/{breveteChofer}")
 	public ResponseEntity<Ruta> getRuta(@PathVariable("breveteChofer") String brevete) {
 		Ruta ruta = despachoService.getRuta(brevete);
-		session.setAttribute(RUTA_EN_SESION, ruta.getCodigo());
-		session.setAttribute(BODEGA_EN_SESION, ruta.getBodega().getCodigo());
-		session.setAttribute(ESTADO_EN_SESION, this.despachoService.getEstado(ruta.getCodigo()));
+		if(ruta.getCodigo() != null) {
+			session.setAttribute(RUTA_EN_SESION, ruta.getCodigo());
+			session.setAttribute(BODEGA_EN_SESION, ruta.getBodega().getCodigo());
+			session.setAttribute(ESTADO_EN_SESION, this.despachoService.getEstado(ruta.getCodigo()));
+		}
 		return new ResponseEntity<>(ruta, HttpStatus.OK);
 	}
 	

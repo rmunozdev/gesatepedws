@@ -33,7 +33,9 @@ public class DespachoDAOImpl implements DespachoDAO {
 		if(ruta != null) {
 			List<DetalleRuta> detalles = this.gesatepedSession.selectList("Ruta.detallesRuta",ruta.getCodigo());
 			ruta.setDetalles(detalles);
-		} 
+		} else {
+			ruta = new Ruta();
+		}
 		return ruta;
 	}
 
