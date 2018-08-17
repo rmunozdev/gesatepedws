@@ -48,6 +48,51 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_cliente_por_email`(
+	pi_cod_cli VARCHAR(10),
+    pi_email VARCHAR(50)
+)
+BEGIN
+
+	SELECT 
+		cod_cli,
+        nom_cli,
+		ape_cli,
+		num_dni_cli,
+		telf_cli,
+		email_cli, 
+		dir_cli,
+		cod_dist
+	FROM tb_cliente
+    WHERE email_cli = pi_email
+    AND cod_cli <> pi_cod_cli;
+    
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_cliente_por_telefono`(
+	pi_cod_cli VARCHAR(10),
+    pi_telefono VARCHAR(9)
+)
+BEGIN
+
+	SELECT 
+		cod_cli,
+        nom_cli,
+		ape_cli,
+		num_dni_cli,
+		telf_cli,
+		email_cli, 
+		dir_cli,
+		cod_dist
+	FROM tb_cliente
+    WHERE telf_cli = pi_telefono
+    AND cod_cli <> pi_cod_cli;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_detalle_ruta`(
 	pi_codigo_ruta VARCHAR(10)
 )
@@ -122,6 +167,30 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_kardex`(
+	pi_cod_ped VARCHAR(10)
+)
+BEGIN
+	SELECT 
+		kardex.cod_bod,
+        kardex.cod_prod,
+		kardex.stk_act,
+		kardex.stk_min,
+        kardex.fec_act_reg,
+        producto.nom_prod,
+        producto.marc_prod,
+        producto.prec_unit_prod
+    FROM tb_detalle_pedido detalle
+    inner join tb_producto producto 
+		on producto.cod_prod = detalle.cod_prod
+    inner join tb_kardex kardex 
+		on kardex.cod_prod = detalle.cod_prod 
+        and kardex.cod_bod = detalle.cod_bod
+    WHERE detalle.cod_ped = pi_cod_ped;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_ruta`(
 	pi_brevete_chofer VARCHAR(10),
     pi_fecha_despacho DATE
@@ -181,6 +250,38 @@ proc_label:BEGIN
 	where 
     tb_detalle_hoja_ruta.cod_hoj_rut = pi_codigo_hoja_ruta
     and tb_detalle_hoja_ruta.cod_ped = pi_codigo_pedido;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_registrar_detalle_pedido`(
+	pi_cod_ped VARCHAR(10),
+    pi_cod_prod VARCHAR(15),
+    pi_cant_prod INT(11),
+    pi_cod_bod VARCHAR(10)
+)
+BEGIN
+	-- Kardex Update
+    UPDATE tb_kardex SET 
+		stk_act = (stk_act - pi_cant_prod),
+        fec_act_reg = NOW()
+	WHERE
+		cod_bod = pi_cod_bod
+        AND cod_prod = pi_cod_prod;
+
+	-- Detalle Pedido Insert
+	INSERT INTO tb_detalle_pedido (
+			cod_ped,
+			cod_prod,
+			cant_prod,
+			cod_bod
+		) VALUES (
+			pi_cod_ped,
+            pi_cod_prod,
+            pi_cant_prod,
+            pi_cod_bod
+        );
+		
 END$$
 DELIMITER ;
 
@@ -247,7 +348,7 @@ BEGIN
     ELSE
 		SET p_num_verif_ped = p_num_verif_ped + 1;
     END IF;
-    
+
      -- Se inserta cliente solo si no existe
     
     SELECT COUNT(cod_cli) into cliente_count from tb_cliente where cod_cli = pi_cod_cli;
@@ -255,9 +356,6 @@ BEGIN
     IF (cliente_count > 0) THEN
     
     UPDATE tb_cliente SET 
-		nom_cli = IFNULL(pi_nom_cli,nom_cli),
-        ape_cli = IFNULL(pi_ape_cli,ape_cli),
-        num_dni_cli = IFNULL(pi_num_dni_cli,num_dni_cli),
         telf_cli = IFNULL(pi_telf_cli,telf_cli),
         email_cli = IFNULL(pi_email_cli,email_cli),
         dir_cli = IFNULL(pi_dir_cli,dir_cli),
@@ -288,7 +386,22 @@ BEGIN
     
     END IF;
     
-    
+    -- Se resuelve direccion de despacho  
+    IF pi_cod_tiend_desp IS NOT NULL THEN
+		SELECT  
+			dir_tiend,cod_dist INTO pi_dir_desp_ped,pi_cod_dist_desp_ped
+		FROM tb_tienda 
+		where cod_tiend = pi_cod_tiend_desp;
+		
+
+	ELSEIF pi_dir_desp_ped IS NULL THEN
+		SELECT 
+			dir_cli,cod_dist INTO pi_dir_desp_ped,pi_cod_dist_desp_ped
+        FROM tb_cliente
+		WHERE cod_cli = pi_cod_cli;
+		
+	END IF;
+
     -- Se construye pedido para cliente
 	INSERT INTO tb_pedido (
 		cod_ped,
