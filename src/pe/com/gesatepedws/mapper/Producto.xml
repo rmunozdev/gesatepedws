@@ -20,4 +20,6 @@
 		from tb_producto
 		where cod_prod = #{codigoProducto}
 	</select>
+	
+	
 </mapper>

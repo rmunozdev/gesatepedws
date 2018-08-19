@@ -227,20 +227,29 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_registrar_atencion`(
 	OUT po_msg_desc VARCHAR(50)
 )
 proc_label:BEGIN
+	
+    
 	DECLARE v_verificacion INT;
+    
+    DECLARE exit handler for sqlexception
+	BEGIN
+	GET DIAGNOSTICS CONDITION 1
+	@p1 = RETURNED_SQLSTATE, @p2 = MESSAGE_TEXT;
+    SET po_msg_cod := -1;
+	SET po_msg_desc :=  CONCAT(RETURNED_SQLSTATE,' ', MESSAGE_TEXT);
+    
+	END;
+        
     select num_verif_ped INTO v_verificacion
     from tb_pedido
     where cod_ped = pi_codigo_pedido;
     
-    IF v_verificacion IS NOT NULL AND v_verificacion <> pi_numero_verificacion THEN
+    IF pi_numero_verificacion IS NULL OR v_verificacion <> pi_numero_verificacion THEN
     SET po_msg_cod := -1;
     SET po_msg_desc := 'Numero de verificación no válido';
     LEAVE proc_label;
 	END IF;
 
-	SET po_msg_cod := 1;
-    SET po_msg_desc := 'Numero de verificación válido';
-    
 	update tb_detalle_hoja_ruta set
 	fec_pact_desp = pi_fecha_pactada_despacho,
     lat_gps_desp_ped = pi_latitud,
@@ -250,6 +259,9 @@ proc_label:BEGIN
 	where 
     tb_detalle_hoja_ruta.cod_hoj_rut = pi_codigo_hoja_ruta
     and tb_detalle_hoja_ruta.cod_ped = pi_codigo_pedido;
+    
+    SET po_msg_cod := 1;
+    SET po_msg_desc := 'Numero de verificación válido';
 END$$
 DELIMITER ;
 
@@ -290,14 +302,14 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_registrar_incumplimiento`(
 	pi_codigo_hoja_ruta VARCHAR(10),
     pi_codigo_pedido VARCHAR(10),
     pi_codigo_motivo VARCHAR(10),
-    pi_fecha_pactada_despacho DATE,
+    pi_fecha_incumplimiento DATETIME,
     pi_latitud DECIMAL(10,7),
     pi_longitud DECIMAL(10,7),
     pi_foto MEDIUMBLOB
 )
 BEGIN
 	update tb_detalle_hoja_ruta set
-		fec_pact_desp = pi_fecha_pactada_despacho,
+		fec_no_cump_desp = pi_fecha_incumplimiento,
 		lat_gps_desp_ped = pi_latitud,
 		long_gps_desp_ped = pi_longitud,
         cod_mot_ped = pi_codigo_motivo,

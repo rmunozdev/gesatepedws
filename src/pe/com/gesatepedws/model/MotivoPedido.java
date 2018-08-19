@@ -1,7 +1,10 @@
 package pe.com.gesatepedws.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class MotivoPedido {
 
+	@JsonProperty("codigo")
 	private String codigo;
 	private String descripcion;
 	private String categoria;

@@ -7,7 +7,6 @@ import pe.com.gesatepedws.model.Cliente;
 import pe.com.gesatepedws.model.DetallePedido;
 import pe.com.gesatepedws.model.Pedido;
 import pe.com.gesatepedws.model.extend.ReservaResponse;
-import pe.com.gesatepedws.notificacion.service.NotificacionService;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 import pe.com.gesatepedws.reserva.service.ReservaService;
 import pe.com.gesatepedws.validacion.service.impl.PedidoValidator;
@@ -20,9 +19,6 @@ public class ReservaServiceImpl implements ReservaService {
 	
 	@Autowired
 	private ReservaDAO reservaDAO;
-	
-	@Autowired
-	private NotificacionService notificacionService;
 	
 	@Override
 	public ReservaResponse reservarPedido(Pedido pedido) {
@@ -73,7 +69,6 @@ public class ReservaServiceImpl implements ReservaService {
 					response.setCodigo(CODIGO_RESPUESTA_EXITO);
 					response.getMensajes().add("La reserva de pedido fue realizada con éxito");
 					
-					notificacionService.notificarAlertaStockMinimo(this.reservaDAO.obtenerKardex(pedido.getCodigo()));
 				} else {
 					response.setCodigo(CODIGO_RESPUESTA_FALLA_DAO);
 				}

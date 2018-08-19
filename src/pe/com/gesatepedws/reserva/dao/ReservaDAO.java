@@ -3,6 +3,7 @@ package pe.com.gesatepedws.reserva.dao;
 import java.util.List;
 
 import pe.com.gesatepedws.model.Cliente;
+import pe.com.gesatepedws.model.DetallePedido;
 import pe.com.gesatepedws.model.Kardex;
 import pe.com.gesatepedws.model.Pedido;
 
@@ -19,5 +20,6 @@ public interface ReservaDAO {
 	public boolean conflictoEmail(String email, String codigoCliente);
 	public boolean conflictoTelefono(String telefono, String codigoCliente);
 	public boolean reservarPedido(Pedido pedido);
-	public List<Kardex> obtenerKardex(String codigoPedido);
+	public List<Kardex> listarKardex(String codigoPedido);
+	public Integer obtenerStock(DetallePedido pedido);
 }

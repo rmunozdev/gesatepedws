@@ -18,4 +18,11 @@
 		from tb_bodega
 		where cod_bod = #{codigoBodega}
 	</select>
+	
+	<select id="stock" resultType="java.lang.Integer" parameterType="detallePedido">
+		select stk_act 
+		from tb_kardex 
+		where cod_bod = #{bodega.codigo}
+		and cod_prod = #{producto.codigo}
+	</select>
 </mapper>

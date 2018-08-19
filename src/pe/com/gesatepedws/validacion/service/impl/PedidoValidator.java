@@ -9,6 +9,8 @@ import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 
 public class PedidoValidator {
 
+	private static final int DURACION_24_HRS = 24 * 60 * 60 * 1000;
+	private static final int DURACION_48_HRS = 48 * 60 * 60 * 1000;
 	private final Pedido pedido;
 	private ReservaDAO datasource;
 	private ClienteValidator clienteValidator;
@@ -117,14 +119,27 @@ public class PedidoValidator {
 		return this;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public PedidoValidator conFechaDespachoAdecuada() {
 		if(this.pedido.getFechadespacho() != null) {
 			if(this.pedido.getFechaSolicitud() != null) {
-				//TODO Obtener espacio mínimo de tabla parámetros
-				this.failMap.put("Fecha de despacho debe ser minimo 24 horas después de la fecha de solicitud del pedido", 
-						(this.pedido.getFechadespacho().getTime() 
-								- this.pedido.getFechaSolicitud().getTime()) 
-						< 24 * 60 * 60 * 1000 );
+				
+				int hora = this.pedido.getFechaSolicitud().getHours();
+				int minutos = this.pedido.getFechaSolicitud().getMinutes();
+				
+				if((hora * 60) + minutos <= 16 * 60) {
+					this.failMap.put("Fecha de despacho debe ser minimo 24 horas después de la fecha de solicitud del pedido", 
+							(this.pedido.getFechadespacho().getTime() 
+									- this.pedido.getFechaSolicitud().getTime()) 
+							< DURACION_24_HRS );
+				} else {
+					this.failMap.put("Fecha de despacho debe ser minimo 48 horas después de la fecha de solicitud del pedido", 
+							(this.pedido.getFechadespacho().getTime() 
+									- this.pedido.getFechaSolicitud().getTime()) 
+							< DURACION_48_HRS );
+				}
+				
+				
 			} 
 			
 			if(this.pedido.getFechaVenta() != null) {

@@ -46,6 +46,8 @@ public class DespachoController {
 		return new ResponseEntity<>(despachoService.getChoferes(),HttpStatus.OK);
 	}
 	
+
+	
 	//ACCESO RESTRINGIDO POR SESION
 	@GetMapping(path="/ruta/{breveteChofer}")
 	public ResponseEntity<Ruta> getRuta(@PathVariable("breveteChofer") String brevete) {
@@ -58,9 +60,11 @@ public class DespachoController {
 		return new ResponseEntity<>(ruta, HttpStatus.OK);
 	}
 	
-	@GetMapping(path="/ruta/pedido/{codigoPedido}")
-	public ResponseEntity<List<DetallePedido>> getDetallePedidos(@PathVariable("codigoPedido") String codigoPedido) {
-		List<DetallePedido> detalles = despachoService.getDetalle(codigoPedido, String.valueOf(session.getAttribute(BODEGA_EN_SESION)));
+	@GetMapping(path="/ruta/pedido/{codigoBodega}/{codigoPedido}")
+	public ResponseEntity<List<DetallePedido>> getDetallePedidos(
+			@PathVariable("codigoPedido") String codigoPedido, @PathVariable("codigoBodega") String codigoBodega) {
+		System.out.println(">>Bodega: " + codigoBodega);
+		List<DetallePedido> detalles = despachoService.getDetalle(codigoPedido, codigoBodega);
 		return new ResponseEntity<>(detalles,HttpStatus.OK);
 	}
 	
@@ -84,24 +88,23 @@ public class DespachoController {
 	
 	@PostMapping("atencion")
 	public ResponseEntity<Boolean> registrarAtencion(@RequestBody DetalleRuta detalle) {
-		System.out.println(">>>Fecha pactada de despacho: " + detalle.getFechaPactadaDespacho());
-		String codigoRuta = String.valueOf(session.getAttribute(RUTA_EN_SESION));;
-		boolean resultado = this.despachoService.registrarAtencion(codigoRuta, detalle);
+		boolean resultado = this.despachoService.registrarAtencion(
+				detalle.getHojaRuta().getCodigo(), 
+				detalle);
 		return new ResponseEntity<>(resultado,HttpStatus.OK);
 	}
 	
 	@PostMapping("incumplimiento")
 	public ResponseEntity<Boolean> registrarIncumplimiento(@RequestBody DetalleRuta detalle) {
-		System.out.println(">>>Fecha pactada de incumplimiento: " + detalle.getFechaNoCumplimientoDespacho());
-		String codigoRuta = String.valueOf(session.getAttribute(RUTA_EN_SESION));;
-		System.out.println(">>>>Ruta a modificar: " +codigoRuta);
-		boolean resultado = this.despachoService.registrarIncumplimiento(codigoRuta, detalle);
+		boolean resultado = this.despachoService.registrarIncumplimiento(
+				detalle.getHojaRuta().getCodigo(), 
+				detalle);
 		return new ResponseEntity<>(resultado,HttpStatus.OK);
 	}
 	
 	@GetMapping("image/{codigoPedido}")
 	public ResponseEntity<String> getImagen(@PathVariable("codigoPedido") String codigoPedido) {
-		String codigoRuta = String.valueOf(session.getAttribute(RUTA_EN_SESION));;
+		String codigoRuta = String.valueOf(session.getAttribute(RUTA_EN_SESION));
 		System.out.println(">>>>Ruta: " +codigoRuta);
 		return new ResponseEntity<>(this.despachoService.getImagen(codigoRuta, codigoPedido),HttpStatus.OK);
 	}

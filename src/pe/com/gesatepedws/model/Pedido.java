@@ -21,6 +21,7 @@ public class Pedido {
 	@JsonProperty("numeroReserva")
 	private Integer numeroReserva;
 	
+	@JsonProperty("numeroVerificacion")
 	private Integer numeroVerificacion;
 	
 	@JsonProperty("fechaSolicitud")
@@ -32,10 +33,14 @@ public class Pedido {
 	private Date fechaVenta;
 	
 	@JsonProperty("fechaDespacho")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date fechadespacho;
 	
 	@JsonProperty("fechaRetiro")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
 	private Date fechaRetiroTienda;
+	
+	
 	private Date fechaRecojoTienda;
 	private Date fechaReprogramacion;
 	private Date fechaCancelacion;
@@ -61,7 +66,11 @@ public class Pedido {
 	@JsonProperty("listaDetallePedido")
 	private List<DetallePedido> detalles;
 	
+	
 	private DetallePedido detalle;
+	
+	
+	
 	
 	public static class Builder {
 		private final String codigo;
@@ -130,6 +139,7 @@ public class Pedido {
 		return codigo;
 	}
 
+	
 	public void setCodigo(String codigo) {
 		this.codigo = codigo;
 	}

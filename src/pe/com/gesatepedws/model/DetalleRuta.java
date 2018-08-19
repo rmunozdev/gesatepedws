@@ -2,8 +2,17 @@ package pe.com.gesatepedws.model;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize
 public class DetalleRuta {
 
+	private Ruta hojaRuta;
+	
+	@JsonProperty("pedido")
 	private Pedido pedido;
 	private String ordenDespachoPedido;
 	private String tiempoPromedioDespacho;
@@ -11,17 +20,37 @@ public class DetalleRuta {
 	private String tiempoEstimadoLlegada;
 	private int distanciaEstimada;
 	private Date fechaEstimLlegada;
+	
+	@JsonProperty("fechaPactadaDespacho")
 	private Date fechaPactadaDespacho;
+	
+	@JsonProperty("fechaNoCumplimientoDespacho")
 	private Date fechaNoCumplimientoDespacho;
+	
+	@JsonProperty("latGPSDespachoPedido")
 	private double latGPSDespachoPedido;
+	
+	@JsonProperty("longGPSDespachoPedido")
 	private double longGPSDespachoPedido;
+	
+	@JsonProperty("fotoDespachoPedido")
 	private String fotoDespachoPedido;
 	private VentanaHoraria ventana;
+	
+	@JsonProperty("motivo")
 	private MotivoPedido motivo;
+	
 	private String destinatario;
 	private String domicilio;
 	private String horario;
 	private String estado;
+	
+	@JsonProperty("codigoHojaRuta")
+	public void setCodigoHojaRuta(String codigo) {
+		this.hojaRuta = new Ruta();
+		this.hojaRuta.setCodigo(codigo);
+	}
+	
 	public Pedido getPedido() {
 		return pedido;
 	}
@@ -129,6 +158,12 @@ public class DetalleRuta {
 	}
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+	public Ruta getHojaRuta() {
+		return hojaRuta;
+	}
+	public void setHojaRuta(Ruta hojaRuta) {
+		this.hojaRuta = hojaRuta;
 	}
 	
 }

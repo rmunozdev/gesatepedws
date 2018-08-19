@@ -16,5 +16,5 @@
 	<context:component-scan
 		base-package="pe.com.gesatepedws" />
 	
-	
+	<mvc:resources mapping="/images/**" location="/images/" />
 </beans>

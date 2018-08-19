@@ -86,8 +86,13 @@ public class ReservaDAOImpl implements ReservaDAO {
 	}
 
 	@Override
-	public List<Kardex> obtenerKardex(String codigoPedido) {
+	public List<Kardex> listarKardex(String codigoPedido) {
 		return this.gesatepedSession.selectList("Pedido.obtenerKardex",codigoPedido);
+	}
+
+	@Override
+	public Integer obtenerStock(DetallePedido detalle) {
+		return this.gesatepedSession.selectOne("Bodega.stock",detalle);
 	}
 
 }

@@ -27,6 +27,11 @@ public class DetallePedidoValidator {
 		.conCodigoBodegaExistente()
 		.conCantidadProductoMinima()
 		;
+		
+		//Validacion temprana para procesos mas avanzados
+		if(this.valid()) {
+			this.conStockDisponible();
+		}
 		return this;
 	}
 	
@@ -77,6 +82,20 @@ public class DetallePedidoValidator {
 					!this.datasource.existeBodega(
 							this.detalle.getBodega().getCodigo()));
 		}
+		return this;
+	}
+	
+	public DetallePedidoValidator conStockDisponible() {
+		Integer stock = this.datasource.obtenerStock(this.detalle);
+		
+		boolean superoStock = this.detalle.getCantidadProducto() > stock;
+		
+		this.failMap.put("Stock para " 
+				+ this.detalle.getProducto().getCodigo() 
+				+ " en bodega "
+				+ this.detalle.getBodega().getCodigo()
+				+ " insuficiente (Disponible solo " + stock + ")", 
+				superoStock);
 		return this;
 	}
 	
