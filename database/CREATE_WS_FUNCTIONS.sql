@@ -90,3 +90,38 @@ BEGIN
 RETURN p_result;
 END$$
 DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` FUNCTION `fn_obtener_numero_destinatario`(
+	pi_codigo_pedido VARCHAR(10)
+) RETURNS varchar(10) CHARSET utf8
+BEGIN
+	DECLARE p_result VARCHAR(10) DEFAULT '';
+
+	-- DESTINATARIO : TIENDA O CLIENTE
+    DECLARE p_fecha_retiro DATE;
+    
+    
+    SELECT fec_ret_tiend INTO p_fecha_retiro 
+    FROM tb_pedido 
+    WHERE cod_ped = pi_codigo_pedido;
+    
+    IF p_fecha_retiro IS NULL THEN 
+    SELECT cli.telf_cli INTO p_result
+		FROM tb_pedido pedido INNER JOIN
+        tb_cliente cli ON cli.cod_cli = pedido.cod_cli
+        WHERE pedido.cod_ped = pi_codigo_pedido;
+	ELSE
+    SELECT controller.telf_contr_tiend INTO p_result
+		FROM tb_pedido pedido 
+        INNER JOIN tb_tienda tienda 
+			ON tienda.cod_tiend = pedido.cod_tiend_desp
+        INNER JOIN tb_controller_tienda controller 
+			ON tienda.cod_contr_tienda = controller.cod_contr_tiend
+        WHERE pedido.cod_ped = pi_codigo_pedido;
+    END IF;
+	
+
+RETURN p_result;
+END$$
+DELIMITER ;

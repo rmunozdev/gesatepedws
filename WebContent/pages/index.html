@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Welcome</title>
+<script type="text/javascript">
+	window.addEventListener("load",start);
+	
+	function start() {
+		fetch("http://localhost:8080/GesatepedWS/despachos/image64/HRU0000004/PED0000018")
+		.then(function(response){
+			return response.text();
+			//document.getElementById("img-container").src = "data:image/jpeg;charset=utf-8;base64" + response.blob();
+		}).then(function(myTxt) {
+			  
+			  document.getElementById("img-container").src = "data:image/png;base64," + myTxt;
+		});
+	}
+
+</script>
+</head>
+<body>
+	Imagen base 64...
+	<img id="img-container" alt="foto" >
+</body>
+</html>

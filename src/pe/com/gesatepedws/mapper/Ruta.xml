@@ -37,6 +37,8 @@
 		)
 	</select>
 	
+	
+	
 	<resultMap id="estadoRM" type="estadoPedido">
 		<result property="nombre" column="est_ped" />
 		<result property="porcentaje" column="porc_est_ped" />

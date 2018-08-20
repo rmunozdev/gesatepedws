@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pe.com.gesatepedws.model.Cliente;
+import pe.com.gesatepedws.model.Distrito;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 
 public class ClienteValidator {
@@ -27,6 +28,7 @@ public class ClienteValidator {
 			.conTelefonoAdecuado()
 			.conDireccionAdecuada()
 			.conCodigoDistritoExistente()
+			.conDireccionMapeable()
 			;
 		return this;
 	}
@@ -149,6 +151,27 @@ public class ClienteValidator {
 			this.failMap.put("El distrito de domicilio del cliente no se encuentra registrado",  
 				!this.datasource.existeDistrito(
 						this.cliente.getDistrito().getCodigo()));
+		}
+		return this;
+	}
+	
+	public ClienteValidator conDireccionMapeable() {
+		//Se valida contra servicio google maps
+		if(this.valid()) {
+			//Se obtiene distrito de datasource
+			Distrito distrito = this.datasource.obtenerDistrito(
+					this.cliente.getDistrito().getCodigo());
+			boolean mapeoValido = GoogleMapsValidatorUtils.
+					validarDireccionCompleta(this.cliente.getDireccion() 
+							+ " " 
+							+ distrito.getNombre());
+			
+			this.failMap.put("La dirección " 
+			+ this.cliente.getDireccion() 
+			+ " en el distrito " 
+			+ this.cliente.getDistrito().getCodigo() 
+			+ " no pudo ser encontrada en el mapa", 
+			!mapeoValido);
 		}
 		return this;
 	}

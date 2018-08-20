@@ -5,13 +5,16 @@ import java.util.List;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import pe.com.gesatepedws.despacho.service.DespachoService;
@@ -102,11 +105,23 @@ public class DespachoController {
 		return new ResponseEntity<>(resultado,HttpStatus.OK);
 	}
 	
-	@GetMapping("image/{codigoPedido}")
-	public ResponseEntity<String> getImagen(@PathVariable("codigoPedido") String codigoPedido) {
-		String codigoRuta = String.valueOf(session.getAttribute(RUTA_EN_SESION));
+	@GetMapping("image/{codigoRuta}/{codigoPedido}")
+	public ResponseEntity<String> getImagen(
+			@PathVariable("codigoPedido") String codigoPedido,
+			@PathVariable("codigoRuta") String codigoRuta
+			) {
 		System.out.println(">>>>Ruta: " +codigoRuta);
-		return new ResponseEntity<>(this.despachoService.getImagen(codigoRuta, codigoPedido),HttpStatus.OK);
+		HttpHeaders responseHeaders = new HttpHeaders();
+	    responseHeaders.setContentType(MediaType.IMAGE_JPEG);
+		return new ResponseEntity<>(this.despachoService.getImagen(codigoRuta, codigoPedido),responseHeaders,HttpStatus.OK);
+	}
+	
+	@GetMapping(path="image64/{codigoRuta}/{codigoPedido}", produces = MediaType.TEXT_PLAIN_VALUE)
+	public @ResponseBody String getBase64Image(
+			@PathVariable("codigoPedido") String codigoPedido,
+			@PathVariable("codigoRuta") String codigoRuta
+			) {
+		return this.despachoService.getImagen(codigoRuta, codigoPedido);
 	}
 	
 }

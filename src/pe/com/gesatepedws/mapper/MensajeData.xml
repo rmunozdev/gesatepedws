@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="MensajeData">
+
+	<resultMap type="mensajeData" id="mensajeDataRM">
+		<result property="codigoHojaRuta" column="codigoHojaRuta" />
+		<result property="codigoPedido" column="codigoPedido" />
+		<result property="cliente" column="cliente" />
+		<result property="domicilio" column="domicilio" />
+		<result property="numeroReserva" column="numeroReserva" />
+		<result property="numeroVerificacion" column="numeroVerificacion" />
+		<result property="fechaDespacho" column="fechaDespacho" />
+		<result property="rangoHorario" column="rangoHorario" />
+		<result property="numero" column="numero" />
+	</resultMap>
+	
+	<select id="get" 
+		resultMap="mensajeDataRM" 
+		parameterType="mensajeData" 
+		statementType="CALLABLE" >
+		call sp_ws_obtener_mensaje_data( 
+			#{codigoHojaRuta,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{codigoPedido,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</select>
+
+</mapper>

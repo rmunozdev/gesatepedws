@@ -21,9 +21,9 @@ public class ReservaResponse {
 	public List<String> getMensajes() {
 		return mensajes;
 	}
-	public void setMensajes(List<String> mensajes) {
-		this.mensajes = mensajes;
-	}
 	
+	public void addMensaje(String mensaje) {
+		this.mensajes.add(mensaje);
+	}
 	
 }

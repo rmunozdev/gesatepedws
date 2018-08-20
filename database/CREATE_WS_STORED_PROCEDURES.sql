@@ -1,23 +1,4 @@
 DELIMITER $$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_describir_pedido`(
-	pi_codigo_pedido VARCHAR(10),
-    pi_codigo_bodega VARCHAR(10)
-    )
-BEGIN
-	select 
-	detalle.cod_prod,
-    producto.nom_prod,
-    detalle.cant_prod
-    -- TODO Tipo de producto (DESPACHO - RETIRO)
-	from tb_detalle_pedido detalle 
-	inner join tb_producto producto
-	where detalle.cod_ped = pi_codigo_pedido 
-    and detalle.cod_bod = pi_codigo_bodega
-    order by producto.cod_prod asc;
-END$$
-DELIMITER ;
-
-DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_listar_motivos`(
 	pi_categoria VARCHAR(4)
     )
@@ -102,7 +83,7 @@ BEGIN
 		detalle.cod_ped as _pedido,
 		fn_obtener_nombre_destinatario(detalle.cod_ped) as destinatario,
 		CONCAT(pedido.dir_desp_ped,' ',distrito.nom_dist) as domicilio,
-		CONCAT('De ' + ventana.hor_fin_vent_hor,' a ',ventana.hor_fin_vent_hor) as horario,
+		CONCAT('De ' , ventana.hor_ini_vent_hor,' a ',ventana.hor_fin_vent_hor) as horario,
         fn_obtener_estado(detalle.cod_ped,detalle.cod_hoj_rut) as estado
     from tb_detalle_hoja_ruta detalle
     inner join tb_ventana_horaria ventana on ventana.cod_vent_hor = detalle.cod_vent_hor
@@ -187,6 +168,33 @@ BEGIN
 		on kardex.cod_prod = detalle.cod_prod 
         and kardex.cod_bod = detalle.cod_bod
     WHERE detalle.cod_ped = pi_cod_ped;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_mensaje_data`(
+	pi_codigo_hoja_ruta VARCHAR(10),
+    pi_codigo_pedido VARCHAR(10)
+)
+BEGIN
+	select
+		detalle.cod_hoj_rut as codigoHojaRuta,
+		detalle.cod_ped as codigoPedido,
+		fn_obtener_nombre_destinatario(detalle.cod_ped) as cliente,
+		CONCAT(pedido.dir_desp_ped,' ',distrito.nom_dist) as domicilio,
+        pedido.num_reserv_ped as numeroReserva,
+        num_verif_ped as numeroVerificacion, 
+        fec_desp_ped as fechaDespacho,
+		CONCAT('Entre las ',ventana.hor_ini_vent_hor,' y ',ventana.hor_fin_vent_hor) as rangoHorario,
+        fn_obtener_numero_destinatario(detalle.cod_ped) as numero
+        
+    from tb_detalle_hoja_ruta detalle
+    inner join tb_ventana_horaria ventana on ventana.cod_vent_hor = detalle.cod_vent_hor
+    inner join tb_pedido pedido on pedido.cod_ped = detalle.cod_ped
+    inner join tb_distrito distrito on distrito.cod_dist = pedido.cod_dist_desp_ped
+    WHERE detalle.cod_hoj_rut = pi_codigo_hoja_ruta
+    and detalle.cod_ped = pi_codigo_pedido;
+
 END$$
 DELIMITER ;
 

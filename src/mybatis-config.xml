@@ -24,6 +24,7 @@
         <typeAlias alias="detalleRutaParam" type="pe.com.gesatepedws.model.extend.DetalleRutaParam" />
         <typeAlias alias="estadoPedido" type="pe.com.gesatepedws.model.extend.EstadoPedido" />
         <typeAlias alias="estadoPedidoParam" type="pe.com.gesatepedws.model.extend.EstadoPedidoParam" />
+        <typeAlias alias="mensajeData" type="pe.com.gesatepedws.model.extend.MensajeData" />
     </typeAliases>
     
     <!-- <typeHandlers>
@@ -37,5 +38,6 @@
         <mapper resource="pe/com/gesatepedws/mapper/Bodega.xml" />
         <mapper resource="pe/com/gesatepedws/mapper/Distrito.xml" />
         <mapper resource="pe/com/gesatepedws/mapper/Tienda.xml" />
+        <mapper resource="pe/com/gesatepedws/mapper/MensajeData.xml" />
     </mappers>
 </configuration>

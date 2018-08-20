@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import pe.com.gesatepedws.model.Cliente;
 import pe.com.gesatepedws.model.DetallePedido;
+import pe.com.gesatepedws.model.Distrito;
 import pe.com.gesatepedws.model.Kardex;
 import pe.com.gesatepedws.model.Pedido;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
@@ -93,6 +94,11 @@ public class ReservaDAOImpl implements ReservaDAO {
 	@Override
 	public Integer obtenerStock(DetallePedido detalle) {
 		return this.gesatepedSession.selectOne("Bodega.stock",detalle);
+	}
+
+	@Override
+	public Distrito obtenerDistrito(String codigoDistrito) {
+		return this.gesatepedSession.selectOne("Distrito.buscar",codigoDistrito);
 	}
 
 }

@@ -1,9 +1,11 @@
 package pe.com.gesatepedws.validacion.service.impl;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import pe.com.gesatepedws.model.DetallePedido;
+import pe.com.gesatepedws.model.Distrito;
 import pe.com.gesatepedws.model.Pedido;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 
@@ -76,6 +78,7 @@ public class PedidoValidator {
 	public PedidoValidator conDireccionDeClienteAdecuada() {
 		this.clienteValidator.conDireccionAdecuada();
 		this.clienteValidator.conCodigoDistritoExistente();
+		this.clienteValidator.conDireccionMapeable();
 		return this;
 	}
 	
@@ -138,14 +141,15 @@ public class PedidoValidator {
 									- this.pedido.getFechaSolicitud().getTime()) 
 							< DURACION_48_HRS );
 				}
-				
-				
 			} 
 			
 			if(this.pedido.getFechaVenta() != null) {
 				this.failMap.put("Fecha de despacho de pedido debe ser mayor a la fecha de venta del pedido", 
 						(this.pedido.getFechadespacho().before(this.pedido.getFechaVenta())));
 			}
+			
+			this.failMap.put("Fecha de despacho debe ser posterior a la fecha actual", 
+					this.pedido.getFechadespacho().before(new Date()));
 		}
 		return this;
 	}
@@ -179,6 +183,26 @@ public class PedidoValidator {
 					this.pedido.getDistritoDespacho() == null 
 					|| this.pedido.getDistritoDespacho().getCodigo() == null
 					|| this.pedido.getDistritoDespacho().getCodigo().isEmpty());
+			
+			//Si todo es valido hasta ahora, usar servicio google para verificar direccion
+			if(this.valid()) {
+				//Se obtiene distrito de datasource
+				Distrito distrito = this.datasource.obtenerDistrito(
+						this.pedido.getDistritoDespacho().getCodigo());
+				
+				boolean mapeoValido = GoogleMapsValidatorUtils.
+						validarDireccionCompleta(
+								this.pedido.getDireccionDespachoPedido() 
+								+ " " 
+								+ distrito.getNombre());
+				
+				this.failMap.put("La dirección " 
+				+ this.pedido.getDireccionDespachoPedido() 
+				+ " en el distrito " 
+				+ this.pedido.getDistritoDespacho().getCodigo() 
+				+ " no pudo ser encontrada en el mapa", 
+				!mapeoValido);
+			}
 		}
 		
 		this.failMap.put("Debe ingresar la direccion de despacho", 

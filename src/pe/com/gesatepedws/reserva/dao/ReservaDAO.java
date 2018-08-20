@@ -4,6 +4,7 @@ import java.util.List;
 
 import pe.com.gesatepedws.model.Cliente;
 import pe.com.gesatepedws.model.DetallePedido;
+import pe.com.gesatepedws.model.Distrito;
 import pe.com.gesatepedws.model.Kardex;
 import pe.com.gesatepedws.model.Pedido;
 
@@ -22,4 +23,5 @@ public interface ReservaDAO {
 	public boolean reservarPedido(Pedido pedido);
 	public List<Kardex> listarKardex(String codigoPedido);
 	public Integer obtenerStock(DetallePedido pedido);
+	public Distrito obtenerDistrito(String codigoDistrito);
 }

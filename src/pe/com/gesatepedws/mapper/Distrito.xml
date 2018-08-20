@@ -4,7 +4,7 @@
 
 <mapper namespace="Distrito">
 	
-	<resultMap type="distrito" id="bodegaRM">
+	<resultMap type="distrito" id="distritoRM">
 		<result property="codigo" column="cod_dist"/>
 		<result property="nombre" column="nom_dist"/>
 		<result property="provincia.codigo" column="cod_prov"/>
@@ -12,7 +12,7 @@
 	</resultMap>
 
 	<select id="buscar"
-		resultMap="bodegaRM" parameterType="String">
+		resultMap="distritoRM" parameterType="String">
 		select *
 		from tb_distrito
 		where cod_dist = #{codigoDistrito}
