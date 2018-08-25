@@ -56,6 +56,7 @@ public class DespachoController {
 	public ResponseEntity<Ruta> getRuta(@PathVariable("breveteChofer") String brevete) {
 		Ruta ruta = despachoService.getRuta(brevete);
 		if(ruta.getCodigo() != null) {
+			System.out.println("Sesion: " + this.session.getId());
 			session.setAttribute(RUTA_EN_SESION, ruta.getCodigo());
 			session.setAttribute(BODEGA_EN_SESION, ruta.getBodega().getCodigo());
 			session.setAttribute(ESTADO_EN_SESION, this.despachoService.getEstado(ruta.getCodigo()));
@@ -71,17 +72,21 @@ public class DespachoController {
 		return new ResponseEntity<>(detalles,HttpStatus.OK);
 	}
 	
-	@GetMapping("isModified")
-	public ResponseEntity<Boolean> isModified() {
+	@GetMapping("isModified/{codigoRuta}")
+	public ResponseEntity<Boolean> isModified(@PathVariable("codigoRuta") String codigoRuta) {
 		String estado = String.valueOf(session.getAttribute(ESTADO_EN_SESION));
-		String ruta = String.valueOf(session.getAttribute(RUTA_EN_SESION));
-		String nuevoEstado = this.despachoService.getEstado(ruta);
-		boolean isModified = !estado.equals(nuevoEstado);
-		
-		if(isModified) {
-			session.setAttribute(ESTADO_EN_SESION, nuevoEstado);
+		if(estado != null) {
+			System.out.println("Session found!! : ");
+			System.out.println("Sesion: " + this.session.getId());
+			String nuevoEstado = this.despachoService.getEstado(codigoRuta);
+			boolean isModified = !estado.equals(nuevoEstado);
+			
+			if(isModified) {
+				session.setAttribute(ESTADO_EN_SESION, nuevoEstado);
+			}
+			return new ResponseEntity<>(isModified,HttpStatus.OK);
 		}
-		return new ResponseEntity<>(isModified,HttpStatus.OK);
+		return new ResponseEntity<>(false,HttpStatus.OK);
 	}
 	
 	@GetMapping("motivos")
