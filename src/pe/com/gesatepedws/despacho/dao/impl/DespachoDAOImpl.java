@@ -68,22 +68,30 @@ public class DespachoDAOImpl implements DespachoDAO {
 
 	@Override
 	public boolean registrarAtencion(String codigoRuta, DetalleRuta detalle) {
-		DetalleRutaParam param = new DetalleRutaParam.Builder(codigoRuta).withDetalle(detalle).build();
-		System.out.println("Insertando para:");
-		System.out.println("Codigo hoja ruta: " + codigoRuta);
-		System.out.println("Codigo de pedido: " + detalle.getPedido().getCodigo());
-		this.gesatepedSession.insert("Ruta.atencion", param);
-		System.out.println("Resultado:");
-		System.out.println("Codigo: " + param.getCodigoRespuesta());
-		System.out.println("Mensaje:" + param.getMensajeRespuesta());
-		return false;
+		try {
+			DetalleRutaParam param = new DetalleRutaParam.Builder(codigoRuta).withDetalle(detalle).build();
+			System.out.println("Insertando para:");
+			System.out.println("Codigo hoja ruta: " + codigoRuta);
+			System.out.println("Codigo de pedido: " + detalle.getPedido().getCodigo());
+			this.gesatepedSession.insert("Ruta.atencion", param);
+			System.out.println("Resultado:");
+			System.out.println("Codigo: " + param.getCodigoRespuesta());
+			System.out.println("Mensaje:" + param.getMensajeRespuesta());
+			return true;
+		} catch(Exception exception) {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean registrarIncumplimiento(String codigoRuta, DetalleRuta detalle) {
-		DetalleRutaParam param = new DetalleRutaParam.Builder(codigoRuta).withDetalle(detalle).build();
-		this.gesatepedSession.insert("Ruta.incumplimiento", param);
-		return false;
+		try {
+			DetalleRutaParam param = new DetalleRutaParam.Builder(codigoRuta).withDetalle(detalle).build();
+			this.gesatepedSession.insert("Ruta.incumplimiento", param);
+			return true;
+		} catch(Exception exception) {
+			return false;
+		}
 	}
 
 	@Override

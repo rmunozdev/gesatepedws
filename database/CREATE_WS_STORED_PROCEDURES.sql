@@ -1,4 +1,23 @@
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_describir_pedido`(
+	pi_codigo_pedido VARCHAR(10),
+    pi_codigo_bodega VARCHAR(10)
+    )
+BEGIN
+	select 
+	detalle.cod_prod,
+    producto.nom_prod,
+    detalle.cant_prod
+    -- TODO Tipo de producto (DESPACHO - RETIRO)
+	from tb_detalle_pedido detalle 
+	inner join tb_producto producto
+	where detalle.cod_ped = pi_codigo_pedido 
+    and detalle.cod_bod = pi_codigo_bodega
+    order by producto.cod_prod asc;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_listar_motivos`(
 	pi_categoria VARCHAR(4)
     )
