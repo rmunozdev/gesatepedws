@@ -1,6 +1,7 @@
 package pe.com.gesatepedws.notificacion.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,7 @@ import pe.com.gesatepedws.notificacion.dao.NotificacionDAO;
 import pe.com.gesatepedws.notificacion.service.NotificacionService;
 import pe.com.gesatepedws.sms.service.SMSService;
 
-@Service
+@Service("NotificacionService")
 public class NotificacionServiceImpl implements NotificacionService {
 
 	@Autowired
@@ -43,8 +44,26 @@ public class NotificacionServiceImpl implements NotificacionService {
 	public boolean notificarVentanaHoraria(String codigoHojaRuta, String codigoPedido) {
 		MensajeData mensajeData = this.notificacionDAO
 				.obtenerMensajeData(codigoHojaRuta, codigoPedido);
+		return procesarYEnviarMensaje(mensajeData);
+	}
+
+	@Override
+	public boolean notificarTodo() {
+		List<MensajeData> mensajes = this.notificacionDAO
+				.obtenerMensajesParaTodasLasRutas(new Date());
 		
-		if(mensajeData != null) {
+		for (MensajeData mensajeData : mensajes) {
+			procesarYEnviarMensaje(mensajeData);
+		}
+		
+		return false;
+	}
+	
+	private boolean procesarYEnviarMensaje(MensajeData mensajeData) {
+		if(mensajeData != null 
+				&& mensajeData.getNumero() != null 
+				&& !mensajeData.getNumero().isEmpty()) {
+			
 			String mensaje = String.format(
 					GesatepedConstants.SMS_MESSAGE_TEMPLATE, 
 					mensajeData.getCliente(),
@@ -54,8 +73,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 					mensajeData.getRangoHorario()
 				);
 			return this.smsService.sendSMS(mensaje, mensajeData.getNumero());
-		}
-		
+		} 
 		return false;
 	}
 

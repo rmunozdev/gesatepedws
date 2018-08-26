@@ -25,5 +25,13 @@
 			#{codigoPedido,javaType=String,jdbcType=VARCHAR,mode=IN}
 		)
 	</select>
+	
+	<select id="list" 
+		resultMap="mensajeDataRM"  
+		statementType="CALLABLE" >
+		call sp_ws_obtener_mensajes_data( 
+			#{pi_fecha_despacho,javaType=java.util.Date,jdbcType=DATE,mode=IN}
+		)
+	</select>
 
 </mapper>
