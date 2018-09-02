@@ -49,8 +49,8 @@ public class MailServiceImpl implements MailService {
 		
 		try {
 			MimeMessage mimeMessage = new MimeMessage(session);
-			mimeMessage.setFrom(new InternetAddress(destinatario));
-			mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse("rmunozdemo@gmail.com"));
+			mimeMessage.setFrom(new InternetAddress(this.parametroService.getMailUsername()));
+			mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
 			//TODO Consultar que va en el asunto
 			mimeMessage.setSubject("Correo de prueba");
 			mimeMessage.setContent(mensaje, "text/html; charset=utf-8");
