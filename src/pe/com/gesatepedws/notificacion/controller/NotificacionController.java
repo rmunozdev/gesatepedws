@@ -1,5 +1,7 @@
 package pe.com.gesatepedws.notificacion.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,5 +28,11 @@ public class NotificacionController {
 		NotificacionResponse response = this.notificacionService.notificarVentanaHoraria(codigoHojaRuta, codigoPedido);
 		
 		return new ResponseEntity<>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping(path="/ejecutar")
+	public ResponseEntity<List<NotificacionResponse>> ejecutarNotificacion() {
+		List<NotificacionResponse> responses = this.notificacionService.notificarTodo();
+		return new ResponseEntity<>(responses,HttpStatus.OK);
 	}
 }

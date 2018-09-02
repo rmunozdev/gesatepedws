@@ -2,7 +2,6 @@ package pe.com.gesatepedws.notificacion.service.impl;
 
 import java.io.StringWriter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import pe.com.gesatepedws.common.GesatepedConstants;
+import pe.com.gesatepedws.common.GesatepedUtils;
 import pe.com.gesatepedws.mail.service.MailService;
 import pe.com.gesatepedws.model.ControllerTienda;
 import pe.com.gesatepedws.model.Kardex;
@@ -81,7 +81,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		List<NotificacionResponse> responses = new ArrayList<>();
 		
 		List<MensajeData> mensajes = this.notificacionDAO
-				.obtenerMensajesParaTodasLasRutas(new Date());
+				.obtenerMensajesParaTodasLasRutas(GesatepedUtils.getDiaSiguiente());
 		
 		Map<String,List<MensajeData>> mensajeTiendaMap = new HashMap<>(); 
 		
@@ -173,6 +173,12 @@ public class NotificacionServiceImpl implements NotificacionService {
 		System.out.println("Mensaje para: " + controllerTienda.getEmail());
 		System.out.println(mensajeControllerTienda);
 		this.mailService.sendEmail(mensajeControllerTienda,controllerTienda.getEmail());
+		
+		for (MensajeData mensajeData : mensajes) {
+			this.notificacionDAO.registrarNotificacion(mensajeData);
+		}
+		
+		response.setCodigo(SUCCESS_CODE);
 		return response;
 	}
 	
