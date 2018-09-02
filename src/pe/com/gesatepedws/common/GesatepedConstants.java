@@ -2,11 +2,11 @@ package pe.com.gesatepedws.common;
 
 public class GesatepedConstants {
 
+	//Su pedido PED0000001 con número de verificación 12345 llegará el 14/06/2018 de 08:00 am a 12:00 pm.
 	public static final String SMS_MESSAGE_TEMPLATE = 
 			"Estimado Cliente %s"
-			+ "\nSu orden de pedido Nro. %s "
-			+ "con código de verificación %s "
-			+ "estará llegando el %s, "
-			+ "aproximadamente %s";
-	
+			+ "\nSu pedido %s "
+			+ "con número de verificación %s "
+			+ "llegará el %s, "
+			+ " %s";
 }

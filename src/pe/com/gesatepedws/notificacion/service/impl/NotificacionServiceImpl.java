@@ -1,9 +1,11 @@
 package pe.com.gesatepedws.notificacion.service.impl;
 
 import java.io.StringWriter;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -121,13 +123,13 @@ public class NotificacionServiceImpl implements NotificacionService {
 		if(mensajeData != null 
 				&& mensajeData.getNumero() != null 
 				&& !mensajeData.getNumero().isEmpty()) {
-			
+			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, new Locale("es","PE"));
 			String mensaje = String.format(
 					GesatepedConstants.SMS_MESSAGE_TEMPLATE, 
 					mensajeData.getDestinatario(),
 					mensajeData.getNumeroReserva(),
 					mensajeData.getNumeroVerificacion(),
-					mensajeData.getFechaDespacho(),
+					dateFormat.format(mensajeData.getFechaDespacho()),
 					mensajeData.getRangoHorario()
 				);
 			Integer smsResponseCode = this.smsService.sendSMS(mensaje, mensajeData.getNumero());
