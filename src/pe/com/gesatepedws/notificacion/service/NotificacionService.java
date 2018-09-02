@@ -3,6 +3,7 @@ package pe.com.gesatepedws.notificacion.service;
 import java.util.List;
 
 import pe.com.gesatepedws.model.Kardex;
+import pe.com.gesatepedws.model.extend.NotificacionResponse;
 
 public interface NotificacionService {
 
@@ -13,6 +14,6 @@ public interface NotificacionService {
 	 * a la fecha establecida
 	 * @return
 	 */
-	public boolean notificarTodo();
-	public boolean notificarVentanaHoraria(String codigoHojaRuta, String codigoPedido);
+	public List<NotificacionResponse> notificarTodo();
+	public NotificacionResponse notificarVentanaHoraria(String codigoHojaRuta, String codigoPedido);
 }

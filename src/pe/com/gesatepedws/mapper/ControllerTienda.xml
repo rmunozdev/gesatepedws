@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="ControllerTienda">
+
+	<resultMap type="controllerTienda" id="controllerTiendaRM">
+		<result property="codigo" column="cod_contr_tiend" />
+		<result property="nombres" column="nom_contr_tiend" />
+		<result property="apellidos" column="ape_contr_tiend" />
+		<result property="telefono" column="telf_contr_tiend" />
+		<result property="email" column="email_contr_tiend" />
+	</resultMap>
+	
+	<select id="get" 
+		resultMap="controllerTiendaRM" 
+		statementType="CALLABLE" >
+		call sp_obtener_controller_tienda( 
+			#{codigoTienda,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</select>
+	
+	
+</mapper>

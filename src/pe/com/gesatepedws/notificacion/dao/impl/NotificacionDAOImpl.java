@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import pe.com.gesatepedws.model.ControllerTienda;
 import pe.com.gesatepedws.model.extend.MensajeData;
 import pe.com.gesatepedws.notificacion.dao.NotificacionDAO;
 
@@ -27,6 +28,20 @@ public class NotificacionDAOImpl implements NotificacionDAO {
 	@Override
 	public List<MensajeData> obtenerMensajesParaTodasLasRutas(Date fecha) {
 		return this.gesatepedSession.selectList("MensajeData.list",fecha);
+	}
+
+	@Override
+	public boolean registrarNotificacion(MensajeData mensajeData) {
+		int update = this.gesatepedSession.update("MensajeData.registrarNotificacion", mensajeData);
+		if(update > 0) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public ControllerTienda getControllerTienda(String codigoTienda) {
+		return this.gesatepedSession.selectOne("ControllerTienda.get", codigoTienda);
 	}
 
 }

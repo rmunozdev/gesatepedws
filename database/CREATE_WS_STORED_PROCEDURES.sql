@@ -11,6 +11,7 @@ BEGIN
     -- TODO Tipo de producto (DESPACHO - RETIRO)
 	from tb_detalle_pedido detalle 
 	inner join tb_producto producto
+    on producto.cod_prod = detalle.cod_prod
 	where detalle.cod_ped = pi_codigo_pedido 
     and detalle.cod_bod = pi_codigo_bodega
     order by producto.cod_prod asc;
@@ -199,7 +200,7 @@ BEGIN
 	select
 		detalle.cod_hoj_rut as codigoHojaRuta,
 		detalle.cod_ped as codigoPedido,
-		fn_obtener_nombre_destinatario(detalle.cod_ped) as cliente,
+		fn_obtener_nombre_destinatario(detalle.cod_ped) as destinatario,
 		CONCAT(pedido.dir_desp_ped,' ',distrito.nom_dist) as domicilio,
         pedido.num_reserv_ped as numeroReserva,
         num_verif_ped as numeroVerificacion, 
@@ -214,6 +215,47 @@ BEGIN
     WHERE detalle.cod_hoj_rut = pi_codigo_hoja_ruta
     and detalle.cod_ped = pi_codigo_pedido;
 
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_obtener_mensajes_data`(
+	pi_fecha_despacho DATE
+)
+BEGIN
+	select 
+    detalle.cod_hoj_rut as codigoHojaRuta,
+	detalle.cod_ped as codigoPedido,
+	fn_obtener_nombre_destinatario(detalle.cod_ped) as destinatario,
+	CONCAT(pedido.dir_desp_ped,' ',distrito.nom_dist) as domicilio,
+    pedido.num_reserv_ped as numeroReserva,
+    
+    num_verif_ped as numeroVerificacion, 
+    fec_desp_ped as fechaDespacho,
+	CONCAT('Entre las ',ventana.hor_ini_vent_hor,' y ',ventana.hor_fin_vent_hor) as rangoHorario,
+    fn_obtener_numero_destinatario(detalle.cod_ped) as numero,
+    
+    -- NUEVO REQUERIMIENTO
+    pedido.cod_tiend_desp as codigoTiendaDespacho,
+    tienda.nom_tiend as nombreTiendaDespacho,
+    unidad.num_plac_unid as unidad,
+    cliente.nom_cli as clienteNombres,
+    cliente.ape_cli as clienteApellidos
+    
+    from tb_detalle_hoja_ruta detalle
+    inner join tb_hoja_ruta ruta on ruta.cod_hoj_rut = detalle.cod_hoj_rut
+    inner join tb_ventana_horaria ventana on ventana.cod_vent_hor = detalle.cod_vent_hor
+    inner join tb_pedido pedido on pedido.cod_ped = detalle.cod_ped
+    inner join tb_distrito distrito on distrito.cod_dist = pedido.cod_dist_desp_ped
+    
+    -- NUEVO REQUERIMIENTO
+    left join tb_tienda tienda on tienda.cod_tiend = pedido.cod_tiend_desp
+    left join tb_cliente cliente on cliente.cod_cli = pedido.cod_cli
+    inner join tb_unidad_chofer uc on uc.cod_unid_chof = ruta.cod_unid_chof
+    inner join tb_unidad unidad on unidad.num_plac_unid = uc.num_placa_unid
+    
+    where ruta.fec_desp_hoj_rut = pi_fecha_despacho;
+    
 END$$
 DELIMITER ;
 
@@ -350,6 +392,19 @@ END$$
 DELIMITER ;
 
 DELIMITER $$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_registrar_notificacion`(
+	pi_codigo_hoja_ruta VARCHAR(10),
+	pi_cod_ped VARCHAR(10)
+)
+BEGIN
+	update tb_detalle_hoja_ruta 
+    set flag_env_vent_hor = 1
+    where cod_hoj_rut = pi_codigo_hoja_ruta
+    and cod_ped = pi_cod_ped;
+END$$
+DELIMITER ;
+
+DELIMITER $$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_reservar_pedido`(
 	pi_cod_ped VARCHAR(10),
 
@@ -380,8 +435,23 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_reservar_pedido`(
 BEGIN
 	DECLARE cliente_count INT default 0;
     DECLARE p_num_verif_ped INT(11) default 0;
-    select num_verif_ped into p_num_verif_ped from tb_pedido order by num_verif_ped DESC LIMIT 1;
+    
+    
 	
+    -- CASO RETIRO EN TIENDA (REUSO DE NUMERO DE VERIFICACION)
+    select num_verif_ped into p_num_verif_ped 
+		from tb_pedido 
+        where fec_desp_ped = pi_fec_desp_ped
+        and fec_ret_tiend is not null
+        and cod_tiend_desp = pi_cod_tiend_desp
+        order by num_verif_ped DESC LIMIT 1;
+        
+	-- SI NO REUSA, SE CREA
+	IF(p_num_verif_ped IS NULL) THEN
+		select num_verif_ped into p_num_verif_ped from tb_pedido order by num_verif_ped DESC LIMIT 1;
+    END IF;
+    
+    
     IF(p_num_verif_ped IS NULL) THEN 
 		SET p_num_verif_ped = 1000;
     ELSE

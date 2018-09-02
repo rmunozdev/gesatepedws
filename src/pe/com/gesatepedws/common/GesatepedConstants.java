@@ -8,4 +8,5 @@ public class GesatepedConstants {
 			+ "con código de verificación %s "
 			+ "estará llegando el %s, "
 			+ "aproximadamente %s";
+	
 }

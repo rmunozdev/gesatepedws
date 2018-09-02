@@ -10,6 +10,7 @@ import pe.com.gesatepedws.validacion.service.ValidacionService;
 
 @Service
 public class ValidacionServiceImpl implements ValidacionService {
+	
 
 	@Override
 	public boolean validarPedido(Pedido pedido, boolean nullAceptable) {

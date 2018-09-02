@@ -9,6 +9,15 @@
     </layout> 
   </appender> 
 
+	<appender name="default.file" class="org.apache.log4j.FileAppender">
+		<param name="file" value="/log/mylogs.log" />
+		<param name="inmediateFlush" value="true" />
+		<param name="threshold" value="debug" />
+		<param name="append" value="false" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConvertionPattern" value="%m%n" />
+		</layout>
+	</appender>
   <root> 
     <priority value ="debug" /> 
     <appender-ref ref="console" /> 

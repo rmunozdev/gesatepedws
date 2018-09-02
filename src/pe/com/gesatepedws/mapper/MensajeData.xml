@@ -7,13 +7,19 @@
 	<resultMap type="mensajeData" id="mensajeDataRM">
 		<result property="codigoHojaRuta" column="codigoHojaRuta" />
 		<result property="codigoPedido" column="codigoPedido" />
-		<result property="cliente" column="cliente" />
+		<result property="destinatario" column="destinatario" />
 		<result property="domicilio" column="domicilio" />
 		<result property="numeroReserva" column="numeroReserva" />
 		<result property="numeroVerificacion" column="numeroVerificacion" />
 		<result property="fechaDespacho" column="fechaDespacho" />
 		<result property="rangoHorario" column="rangoHorario" />
 		<result property="numero" column="numero" />
+		
+		<result property="tiendaDespacho.codigo" column="codigoTiendaDespacho" />
+		<result property="tiendaDespacho.nombre" column="nombreTiendaDespacho" />
+		<result property="unidad.numeroPlaca" column="unidad" />
+		<result property="cliente.nombres" column="clienteNombres" />
+		<result property="cliente.apellidos" column="clienteApellidos" />
 	</resultMap>
 	
 	<select id="get" 
@@ -33,5 +39,13 @@
 			#{pi_fecha_despacho,javaType=java.util.Date,jdbcType=DATE,mode=IN}
 		)
 	</select>
-
+	
+	<update id="registrarNotificacion" 
+		parameterType="mensajeData" 
+		statementType="CALLABLE">
+		call sp_ws_registrar_notificacion(
+			#{codigoHojaRuta,javaType=String,jdbcType=VARCHAR,mode=IN},
+			#{codigoPedido,javaType=String,jdbcType=VARCHAR,mode=IN}
+		)
+	</update>
 </mapper>

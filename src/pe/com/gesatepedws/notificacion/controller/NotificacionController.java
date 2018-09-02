@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import pe.com.gesatepedws.model.extend.NotificacionResponse;
 import pe.com.gesatepedws.notificacion.service.NotificacionService;
 
 @RestController
@@ -18,10 +19,12 @@ public class NotificacionController {
 	private NotificacionService notificacionService;
 	
 	@GetMapping(path="/sms/{codigoHojaRuta}/{codigoPedido}")
-	public ResponseEntity<String> notificarSMS(
+	public ResponseEntity<NotificacionResponse> notificarSMS(
 			@PathVariable("codigoHojaRuta") String codigoHojaRuta, 
 			@PathVariable("codigoPedido") String codigoPedido) {
-		this.notificacionService.notificarVentanaHoraria(codigoHojaRuta, codigoPedido);
-		return new ResponseEntity<>("Success",HttpStatus.OK);
+		
+		NotificacionResponse response = this.notificacionService.notificarVentanaHoraria(codigoHojaRuta, codigoPedido);
+		
+		return new ResponseEntity<>(response,HttpStatus.OK);
 	}
 }

@@ -5,29 +5,38 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.net.UnknownHostException;
 
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import pe.com.gesatepedws.parametro.service.ParametroService;
 import pe.com.gesatepedws.sms.service.SMSService;
 
 @Service
 public class SMSServiceImpl implements SMSService {
 
+	private static final Logger logger = Logger.getLogger(SMSServiceImpl.class);
+	
+	@Autowired
+	private ParametroService parametroService;
+	
 	@Override
-	public boolean sendSMS(String mensaje, String numero) {
+	public Integer sendSMS(String mensaje, String numero) {
+		String ws_url = this.parametroService.getSMSServer();
 		try {
-			//TODO Mover API Key
-			String apiKey = "apiKey=" + "jiTXgvNzM2I-dNxGxOJlfngifDQlDe828vW0yfEPOo";
+			String apiKey = "apiKey=" + this.parametroService.getSMSAPIKey();
 			String message = "&message=" + URLEncoder.encode(mensaje, "UTF-8");
-			String sender = "&sender=" + "Sodimac";
-			String numbers = "&numbers=51" + numero;
-			String test = "&test=true";
+			String sender = "&sender=" + this.parametroService.getSMSRemitente();
+			String numbers = "&numbers=" + this.parametroService.getSMSCodigoPaisDestino() + numero;
+			String test = "&test=" + this.parametroService.getSMSActivarModoPrueba();
 			
 			// Send data
-			HttpURLConnection conn = (HttpURLConnection) new URL("https://api.txtlocal.com/send/?").openConnection();
+			HttpURLConnection conn = (HttpURLConnection) new URL(ws_url).openConnection();
 			String data = apiKey + numbers + message + sender + test;
 			
-			System.out.println(">>>>data" + data);
+			logger.info("Contenido a  envíar: " + data);
 			
 			conn.setDoOutput(true);
 			conn.setRequestMethod("POST");
@@ -40,12 +49,15 @@ public class SMSServiceImpl implements SMSService {
 				stringBuffer.append(line);
 			}
 			rd.close();
-			System.out.println("SMS Enviado, response: ");
-			System.out.println(stringBuffer);
-			return true;
+			logger.info("SMS Enviado, response: ");
+			logger.info(stringBuffer.toString());
+			return SMSResponseCodes.SUCESS;
+		} catch(UnknownHostException exception) {
+			logger.error("Falla grave al establecer comunicacion con " + ws_url,exception);
+			throw new IllegalStateException("No se pudo establecer comunicacion", exception);
 		} catch(Exception exception) {
-			exception.printStackTrace();
-			return false;
+			logger.error("Excepción al enviar SMS al " + numero, exception);
+			return SMSResponseCodes.FAIL;
 		}
 	}
 

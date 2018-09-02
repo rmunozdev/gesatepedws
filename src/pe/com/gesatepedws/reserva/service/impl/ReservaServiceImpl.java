@@ -7,18 +7,26 @@ import pe.com.gesatepedws.model.Cliente;
 import pe.com.gesatepedws.model.DetallePedido;
 import pe.com.gesatepedws.model.Pedido;
 import pe.com.gesatepedws.model.extend.ReservaResponse;
+import pe.com.gesatepedws.parametro.service.ParametroService;
 import pe.com.gesatepedws.reserva.dao.ReservaDAO;
 import pe.com.gesatepedws.reserva.service.ReservaService;
+import pe.com.gesatepedws.validacion.service.impl.GoogleMapsValidatorUtils;
 import pe.com.gesatepedws.validacion.service.impl.PedidoValidator;
 
 @Service
 public class ReservaServiceImpl implements ReservaService {
+	
 	private static final int CODIGO_RESPUESTA_FALLO_VALIDACION = -1;
 	private static final int CODIGO_RESPUESTA_FALLA_DAO = -2;
 	private static final int CODIGO_RESPUESTA_EXITO = 0;
 	
 	@Autowired
 	private ReservaDAO reservaDAO;
+	
+	public ReservaServiceImpl(@Autowired ParametroService parametroService) {
+		//Inicializacion de componentes estaticos
+		GoogleMapsValidatorUtils.setAPIKey(parametroService.getGoogleMapAPIKey());
+	}
 	
 	@Override
 	public ReservaResponse reservarPedido(Pedido pedido) {

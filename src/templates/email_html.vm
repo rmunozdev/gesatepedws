@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Template for velocity</title>
+<style>
+	.mail_table {
+	    border-collapse: collapse;
+	    border: solid 1px;
+	    width: 400px;
+	}
+	
+	.mail_table tr {
+		border: solid 1px;
+	}
+	
+	.mail_table th {
+		padding: 5px 10px;
+		background-color: #deeaf9;
+		border: solid 1px;
+	}
+	
+	.mail_table td {
+		padding: 5px 10px;
+		border: solid 1px;
+	}
+	
+	.top_header {
+		background-color: #c2d6ef !important;
+	}
+	
+	.pedido_segment {
+		width: 100px;
+	}
+	
+</style>
+</head>
+<body>
+	<p>Estimado Controller de Tienda</p>
+	<p>El $data.FechaDespachoText, estarán llegando los siguientes pedidos 
+	con número de verificación $data.numeroVerificacion a la $data.tienda.nombre:</p>
+	
+	#foreach($unidadMensaje in $data.unidades)
+	<table class="mail_table">
+		<tr>
+			<th colspan="2" class="top_header" >Unidad $unidadMensaje.unidad.numeroPlaca $unidadMensaje.rangoHorario</th>
+		</tr>
+		<tr>
+			<th class="pedido_segment">Pedido</th>
+			<th>Cliente</th>
+		</tr>
+		#foreach($mensaje in $unidadMensaje.mensajes)
+		<tr>
+			<td class="pedido_segment">$mensaje.codigoPedido </td>
+			<td>$mensaje.cliente.apellidos, $mensaje.cliente.nombres</td>
+		</tr>
+		#end
+		
+	</table>
+	<br>
+	#end
+</body>
+</html>
