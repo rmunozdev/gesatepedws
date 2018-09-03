@@ -59,9 +59,9 @@ public class MailServiceImpl implements MailService {
 			System.out.println("done");
 		} catch(MessagingException exception) {
 			exception.printStackTrace();
-			return -1;
+			return MailResponseCodes.FAIL;
 		}
-		return 1;
+		return MailResponseCodes.SUCESS;
 	}
 
 }

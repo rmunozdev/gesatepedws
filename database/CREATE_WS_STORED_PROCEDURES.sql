@@ -205,7 +205,7 @@ BEGIN
         pedido.num_reserv_ped as numeroReserva,
         num_verif_ped as numeroVerificacion, 
         fec_desp_ped as fechaDespacho,
-		CONCAT('Entre las ',ventana.hor_ini_vent_hor,' y ',ventana.hor_fin_vent_hor) as rangoHorario,
+		CONCAT('de ',ventana.hor_ini_vent_hor,' a ',ventana.hor_fin_vent_hor) as rangoHorario,
         fn_obtener_numero_destinatario(detalle.cod_ped) as numero
         
     from tb_detalle_hoja_ruta detalle
@@ -231,8 +231,8 @@ BEGIN
     pedido.num_reserv_ped as numeroReserva,
     
     num_verif_ped as numeroVerificacion, 
-    fec_desp_ped as fechaDespacho,
-	CONCAT('Entre las ',ventana.hor_ini_vent_hor,' y ',ventana.hor_fin_vent_hor) as rangoHorario,
+    ruta.fec_desp_hoj_rut as fechaDespacho,
+	CONCAT('de ',ventana.hor_ini_vent_hor,' a ',ventana.hor_fin_vent_hor) as rangoHorario,
     fn_obtener_numero_destinatario(detalle.cod_ped) as numero,
     
     -- NUEVO REQUERIMIENTO

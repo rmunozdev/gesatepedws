@@ -7,6 +7,6 @@ public class GesatepedConstants {
 			"Estimado Cliente %s"
 			+ "\nSu pedido %s "
 			+ "con número de verificación %s "
-			+ "llegará el %s, "
+			+ "llegará el %s "
 			+ " %s";
 }

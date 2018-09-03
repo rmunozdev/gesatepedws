@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import pe.com.gesatepedws.common.GesatepedConstants;
 import pe.com.gesatepedws.common.GesatepedUtils;
 import pe.com.gesatepedws.mail.service.MailService;
+import pe.com.gesatepedws.mail.service.impl.MailResponseCodes;
 import pe.com.gesatepedws.model.ControllerTienda;
 import pe.com.gesatepedws.model.Kardex;
 import pe.com.gesatepedws.model.extend.MensajeData;
@@ -42,6 +43,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 	public static final Integer VALIDATION_FAIL_CODE = -1;
 	public static final Integer SMS_FAIL_CODE = -2;
 	public static final Integer REGISTRO_FAIL_CODE = -3;
+	public static final Integer MAIL_FAIL_CODE = -4;
 	
 	@Autowired
 	private NotificacionDAO notificacionDAO;
@@ -87,6 +89,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 		
 		Map<String,List<MensajeData>> mensajeTiendaMap = new HashMap<>(); 
 		
+		int smsCounter = 0;
+		int smsFailCounter = 0;
 		for (MensajeData mensajeData : mensajes) {
 			//Deben agruparse mensajes para retiro en tienda (por cada bodega)
 			if(mensajeData.getTiendaDespacho() != null) {
@@ -97,24 +101,41 @@ public class NotificacionServiceImpl implements NotificacionService {
 				.add(mensajeData);
 			} else {
 				//Los mensajes para clientes (no retiro)
-				responses.add(procesarYEnviarMensajeSMS(mensajeData));
+				NotificacionResponse smsResponse = procesarYEnviarMensajeSMS(mensajeData);
+				responses.add(smsResponse);
+				if(smsResponse.getCodigo() == SUCCESS_CODE) {
+					smsCounter++;
+				} else {
+					smsFailCounter++;
+				}
 			}
 		}
 		
+		
 		//Mensajes para tienda se envia por email
+		int mailFails = 0;
 		for(List<MensajeData> mensajesData : mensajeTiendaMap.values()) {
-			responses.add(this.procesarYEnviarMensajesEmail(mensajesData));
+			NotificacionResponse mailResponse = this.procesarYEnviarMensajesEmail(mensajesData);
+			responses.add(mailResponse);
+			if(mailResponse.getCodigo() == SUCCESS_CODE) {
+				mailFails++;
+			}
 		}
 		
 		
-		logger.info("Se procesaron: " + responses.size() + " mensajes");
 		int failCounter = 0;
 		for(NotificacionResponse response: responses) {
-			if(response.getCodigo() != 1) {
+			if(response.getCodigo() != SUCCESS_CODE) {
 				failCounter++;
 			}
 		}
-		logger.info(failCounter + " mensajes no se lograron procesar");
+		logger.info("******** RESUMEN NOTIFICACION ************");
+		logger.info("Total de pedidos procesados: " + responses.size());
+		logger.info("Mensajes SMS enviados con éxito: " + smsCounter);
+		logger.info("Mensajes SMS fallidos: " + smsFailCounter);
+		logger.info("Email enviados con éxito: " + mailFails);
+		logger.info("Email fallidos: " + (mensajeTiendaMap.size()-mailFails));
+		logger.info("Notificaciones no transmitidas (SMS o EMAIL):" + failCounter);
 		return responses;
 	}
 	
@@ -122,12 +143,13 @@ public class NotificacionServiceImpl implements NotificacionService {
 		NotificacionResponse response = new NotificacionResponse();
 		if(mensajeData != null 
 				&& mensajeData.getNumero() != null 
-				&& !mensajeData.getNumero().isEmpty()) {
+				&& !mensajeData.getNumero().isEmpty()
+				&& !mensajeData.getNumero().equals("-")) {
 			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, new Locale("es","PE"));
 			String mensaje = String.format(
 					GesatepedConstants.SMS_MESSAGE_TEMPLATE, 
 					mensajeData.getDestinatario(),
-					mensajeData.getNumeroReserva(),
+					mensajeData.getCodigoPedido(),
 					mensajeData.getNumeroVerificacion(),
 					dateFormat.format(mensajeData.getFechaDespacho()),
 					mensajeData.getRangoHorario()
@@ -170,24 +192,28 @@ public class NotificacionServiceImpl implements NotificacionService {
 		
 		String mensajeControllerTienda = generarMensajeControllerTienda(dataControllerTienda);
 		
-		System.out.println("***********\nMensaje\n***********");
 		ControllerTienda controllerTienda = this.notificacionDAO.getControllerTienda(dataControllerTienda.getTienda().getCodigo());
-		System.out.println("Mensaje para: " + controllerTienda.getEmail());
-		System.out.println(mensajeControllerTienda);
-		this.mailService.sendEmail(mensajeControllerTienda,controllerTienda.getEmail());
+		System.out.println("Enviando email a: " + controllerTienda.getEmail());
+		Integer mailResponse = this.mailService.sendEmail(mensajeControllerTienda,controllerTienda.getEmail());
 		
-		for (MensajeData mensajeData : mensajes) {
-			this.notificacionDAO.registrarNotificacion(mensajeData);
+		if(mailResponse == MailResponseCodes.SUCESS) {
+			for (MensajeData mensajeData : mensajes) {
+				this.notificacionDAO.registrarNotificacion(mensajeData);
+			}
+			response.setCodigo(SUCCESS_CODE);
+		} else {
+			response.setCodigo(MAIL_FAIL_CODE);
 		}
-		
-		response.setCodigo(SUCCESS_CODE);
 		return response;
 	}
 	
 	private String obtenerRazonFalla(MensajeData mensajeData) {
 		if(mensajeData == null) {
 			return "Imposible obtener parametros para mensaje";
-		} else if (mensajeData.getNumero() == null || mensajeData.getNumero().isEmpty()) {
+		} else if (mensajeData.getNumero() == null || 
+				mensajeData.getNumero().isEmpty() ||
+				mensajeData.getNumero().equals("-")
+				) {
 			return "Destinatario " + mensajeData.getDestinatario()  +" no tiene número";
 		}
 		throw new IllegalStateException("Error inesperado para " + mensajeData.getDestinatario());
