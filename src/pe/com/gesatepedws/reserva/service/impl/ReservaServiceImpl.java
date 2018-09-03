@@ -46,9 +46,6 @@ public class ReservaServiceImpl implements ReservaService {
 				.conFechaDespachoAdecuada()
 				.conDireccionYDistritoDespachoAdecuados()
 				.conTiendaDespachoYFechaRetiroCoherente()
-				.conEmailClienteAdecuado()
-				.conTelefonoClienteAdecuado()
-				.conDireccionDeClienteAdecuada()
 				.conAlMenosUnDetalle()
 				.conDetallesAdecuados()
 				.conCodigoDistritoExistente()
@@ -67,6 +64,14 @@ public class ReservaServiceImpl implements ReservaService {
 				.conNumeroDNIClienteAdecuado()
 				;
 			}
+			
+			//Se revisan una vez se establecieron controles anteriores
+			pedidoValidator
+				.conEmailClienteAdecuado()
+				.conTelefonoClienteAdecuado()
+				.conDireccionDeClienteAdecuada();
+			
+			
 			if(pedidoValidator.valid()) {
 				//Fill cod_ped on detalles
 				for(DetallePedido detalle : pedido.getDetalles()) {

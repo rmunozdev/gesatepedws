@@ -39,7 +39,7 @@ public class ReservaController {
 	
 	@ExceptionHandler
 	public ResponseEntity<ReservaResponse> handleException(HttpServletRequest request, Throwable ex) {
-		System.err.println(ex);
+		ex.printStackTrace();
 		ReservaResponse response = new ReservaResponse();
 		response.setCodigo(-1);
 		if(ex instanceof HttpMessageNotReadableException) {
