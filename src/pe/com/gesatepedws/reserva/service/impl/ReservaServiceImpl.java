@@ -54,7 +54,7 @@ public class ReservaServiceImpl implements ReservaService {
 				.sinConflictoTelefonoCliente()
 			;
 			
-			Cliente cliente = this.reservaDAO.getCliente(pedido.getCliente().getCodigo());;
+			Cliente cliente = this.reservaDAO.getCliente(pedido.getCliente().getCodigo());
 			if(cliente == null) {
 				//Solo en nuevo cliente se valida DNI y nombres
 				pedidoValidator

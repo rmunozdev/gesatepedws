@@ -434,7 +434,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_ws_reservar_pedido`(
 )
 BEGIN
 	DECLARE cliente_count INT default 0;
-    DECLARE p_num_verif_ped INT(11) default 0;
+    DECLARE p_num_verif_ped INT(11) default null;
     
     
 	
