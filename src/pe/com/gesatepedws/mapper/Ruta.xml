@@ -7,6 +7,9 @@
 	<resultMap type="ruta" id="rutaRM">
 		<result property="codigo" column="cod_hoj_rut" />
 		<result property="bodega.codigo" column="cod_bod" />
+		<result property="bodega.nombre" column="nom_bod" />
+		<result property="bodega.direccion" column="dir_bod" />
+		<result property="bodega.distrito.nombre" column="nom_dist" />
 		<result property="unidadChofer.unidad.numeroPlaca" column="num_plac_unid" />
 		<result property="unidadChofer.unidad.numeroSoat" column="num_soat_unid" />
 		<result property="unidadChofer.chofer.nombres" column="nom_chof" />
@@ -28,6 +31,8 @@
 		<result property="destinatario" column="destinatario" />
 		<result property="domicilio" column="domicilio" />
 		<result property="horario" column="horario" />
+		<result property="ventana.horaInicio" column="hor_ini_vent_hor" />
+		<result property="ventana.horaFin" column="hor_fin_vent_hor" />
 		<result property="estado" column="estado" />
 	</resultMap>
 	

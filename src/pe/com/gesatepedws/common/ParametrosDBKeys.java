@@ -24,7 +24,8 @@ public enum ParametrosDBKeys {
 	SMS_SENDER("20"),
 	SMS_COD_PAIS_DEST("21"),
 	SMS_TEST_MODE("22"),
-	SMS_WS_PROVIDER_URL("23")
+	SMS_WS_PROVIDER_URL("23"),
+	EMAIL_SUBJECT("24")
 	;
 	
 	private String dbKey;

@@ -106,5 +106,10 @@ public class DespachoDAOImpl implements DespachoDAO {
 				.build();
 		return this.gesatepedSession.selectOne("Ruta.imagen", param);
 	}
+	
+	@Override
+	public Integer getNumeroVerificacion(String codigoPedido) {
+		return this.gesatepedSession.selectOne("Pedido.obtenerNumeroVerificacion",codigoPedido);
+	}
 
 }

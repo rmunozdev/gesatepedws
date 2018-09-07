@@ -23,6 +23,7 @@ import pe.com.gesatepedws.model.DetallePedido;
 import pe.com.gesatepedws.model.DetalleRuta;
 import pe.com.gesatepedws.model.MotivoPedido;
 import pe.com.gesatepedws.model.Ruta;
+import pe.com.gesatepedws.model.extend.DespachoResponse;
 
 @RestController
 @RequestMapping("/despachos")
@@ -95,16 +96,16 @@ public class DespachoController {
 	}
 	
 	@PostMapping("atencion")
-	public ResponseEntity<Boolean> registrarAtencion(@RequestBody DetalleRuta detalle) {
-		boolean resultado = this.despachoService.registrarAtencion(
+	public ResponseEntity<DespachoResponse> registrarAtencion(@RequestBody DetalleRuta detalle) {
+		DespachoResponse resultado = this.despachoService.registrarAtencion(
 				detalle.getHojaRuta().getCodigo(), 
 				detalle);
 		return new ResponseEntity<>(resultado,HttpStatus.OK);
 	}
 	
 	@PostMapping("incumplimiento")
-	public ResponseEntity<Boolean> registrarIncumplimiento(@RequestBody DetalleRuta detalle) {
-		boolean resultado = this.despachoService.registrarIncumplimiento(
+	public ResponseEntity<DespachoResponse> registrarIncumplimiento(@RequestBody DetalleRuta detalle) {
+		DespachoResponse resultado = this.despachoService.registrarIncumplimiento(
 				detalle.getHojaRuta().getCodigo(), 
 				detalle);
 		return new ResponseEntity<>(resultado,HttpStatus.OK);

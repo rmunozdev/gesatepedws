@@ -103,5 +103,12 @@ public class ParametroServiceImpl implements ParametroService {
 				ParametrosDBKeys.SMS_WS_PROVIDER_URL.getKey())
 				.getValor();
 	}
+	
+	@Override
+	public String getEmailSubject() {
+		return this.parametrosMap.get(
+				ParametrosDBKeys.EMAIL_SUBJECT.getKey())
+				.getValor();
+	}
 
 }

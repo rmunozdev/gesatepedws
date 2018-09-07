@@ -69,4 +69,9 @@
 		)
 	</select>
 	
+	
+	<select id="obtenerNumeroVerificacion" parameterType="String" resultType="java.lang.Integer">
+		select num_verif_ped from tb_pedido where cod_ped = #{codigoPedido}
+	</select>
+	
 </mapper>

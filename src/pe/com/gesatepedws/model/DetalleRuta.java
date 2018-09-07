@@ -35,6 +35,7 @@ public class DetalleRuta {
 	
 	@JsonProperty("fotoDespachoPedido")
 	private String fotoDespachoPedido;
+	
 	private VentanaHoraria ventana;
 	
 	@JsonProperty("motivo")

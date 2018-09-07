@@ -24,7 +24,7 @@ public class MailServiceImpl implements MailService {
 	private ParametroService parametroService;
 	
 	@Override
-	public Integer sendEmail(String mensaje, String destinatario) {
+	public Integer sendEmail(String asunto, String mensaje, String destinatario) {
 		
 		Properties properties = new Properties();
 		properties.put("mail.smtp.auth", "true");
@@ -52,7 +52,7 @@ public class MailServiceImpl implements MailService {
 			mimeMessage.setFrom(new InternetAddress(this.parametroService.getMailUsername()));
 			mimeMessage.setRecipients(Message.RecipientType.TO, InternetAddress.parse(destinatario));
 			//TODO Consultar que va en el asunto
-			mimeMessage.setSubject("Correo de prueba");
+			mimeMessage.setSubject(asunto);
 			mimeMessage.setContent(mensaje, "text/html; charset=utf-8");
 			
 			Transport.send(mimeMessage);

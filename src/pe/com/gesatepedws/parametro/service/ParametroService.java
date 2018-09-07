@@ -12,5 +12,6 @@ public interface ParametroService {
 	public String getSMSCodigoPaisDestino();
 	public String getSMSActivarModoPrueba();
 	public String getSMSServer();
+	public String getEmailSubject();
 	
 }

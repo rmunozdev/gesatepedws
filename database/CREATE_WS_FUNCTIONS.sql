@@ -77,7 +77,7 @@ BEGIN
     WHERE cod_ped = pi_cod_ped;
     
     IF p_fecha_retiro IS NULL THEN 
-    SELECT CONCAT(cli.nom_cli," ",cli.ape_cli) INTO p_result
+    SELECT CONCAT(cli.ape_cli,", ",cli.nom_cli) INTO p_result
 		FROM tb_pedido pedido INNER JOIN
         tb_cliente cli ON cli.cod_cli = pedido.cod_cli
         WHERE pedido.cod_ped = pi_cod_ped;

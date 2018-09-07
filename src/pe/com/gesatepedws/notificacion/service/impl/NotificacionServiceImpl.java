@@ -1,11 +1,10 @@
 package pe.com.gesatepedws.notificacion.service.impl;
 
 import java.io.StringWriter;
-import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 
@@ -27,6 +26,7 @@ import pe.com.gesatepedws.model.extend.NotificacionResponse;
 import pe.com.gesatepedws.model.extend.TiendaMensajeData;
 import pe.com.gesatepedws.notificacion.dao.NotificacionDAO;
 import pe.com.gesatepedws.notificacion.service.NotificacionService;
+import pe.com.gesatepedws.parametro.service.ParametroService;
 import pe.com.gesatepedws.sms.service.SMSService;
 import pe.com.gesatepedws.sms.service.impl.SMSResponseCodes;
 
@@ -44,6 +44,9 @@ public class NotificacionServiceImpl implements NotificacionService {
 	public static final Integer SMS_FAIL_CODE = -2;
 	public static final Integer REGISTRO_FAIL_CODE = -3;
 	public static final Integer MAIL_FAIL_CODE = -4;
+	
+	@Autowired
+	private ParametroService parametroService;
 	
 	@Autowired
 	private NotificacionDAO notificacionDAO;
@@ -145,10 +148,9 @@ public class NotificacionServiceImpl implements NotificacionService {
 				&& mensajeData.getNumero() != null 
 				&& !mensajeData.getNumero().isEmpty()
 				&& !mensajeData.getNumero().equals("-")) {
-			DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.SHORT, new Locale("es","PE"));
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MMM-YYYY");
 			String mensaje = String.format(
 					GesatepedConstants.SMS_MESSAGE_TEMPLATE, 
-					mensajeData.getDestinatario(),
 					mensajeData.getCodigoPedido(),
 					mensajeData.getNumeroVerificacion(),
 					dateFormat.format(mensajeData.getFechaDespacho()),
@@ -194,7 +196,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 		
 		ControllerTienda controllerTienda = this.notificacionDAO.getControllerTienda(dataControllerTienda.getTienda().getCodigo());
 		System.out.println("Enviando email a: " + controllerTienda.getEmail());
-		Integer mailResponse = this.mailService.sendEmail(mensajeControllerTienda,controllerTienda.getEmail());
+		String asunto = this.parametroService.getEmailSubject().replace("[Tienda]", dataControllerTienda.getTienda().getNombre());
+		Integer mailResponse = this.mailService.sendEmail(asunto,mensajeControllerTienda,controllerTienda.getEmail());
 		
 		if(mailResponse == MailResponseCodes.SUCESS) {
 			for (MensajeData mensajeData : mensajes) {

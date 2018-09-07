@@ -7,6 +7,7 @@ import pe.com.gesatepedws.model.DetallePedido;
 import pe.com.gesatepedws.model.DetalleRuta;
 import pe.com.gesatepedws.model.MotivoPedido;
 import pe.com.gesatepedws.model.Ruta;
+import pe.com.gesatepedws.model.extend.DespachoResponse;
 
 public interface DespachoService {
 
@@ -15,7 +16,7 @@ public interface DespachoService {
 	public String getEstado(String ruta);
 	public List<MotivoPedido> getMotivos();
 	public List<Chofer> getChoferes();
-	public boolean registrarAtencion(String codigoRuta, DetalleRuta detalle);
-	public boolean registrarIncumplimiento(String codigoRuta, DetalleRuta detalle);
+	public DespachoResponse registrarAtencion(String codigoRuta, DetalleRuta detalle);
+	public DespachoResponse registrarIncumplimiento(String codigoRuta, DetalleRuta detalle);
 	public String getImagen(String codigoRuta, String codigoPedido);
 }

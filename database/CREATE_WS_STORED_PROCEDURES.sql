@@ -104,6 +104,8 @@ BEGIN
 		fn_obtener_nombre_destinatario(detalle.cod_ped) as destinatario,
 		CONCAT(pedido.dir_desp_ped,' ',distrito.nom_dist) as domicilio,
 		CONCAT('De ' , ventana.hor_ini_vent_hor,' a ',ventana.hor_fin_vent_hor) as horario,
+        ventana.hor_ini_vent_hor,
+        ventana.hor_fin_vent_hor,
         fn_obtener_estado(detalle.cod_ped,detalle.cod_hoj_rut) as estado
     from tb_detalle_hoja_ruta detalle
     inner join tb_ventana_horaria ventana on ventana.cod_vent_hor = detalle.cod_vent_hor
@@ -232,7 +234,7 @@ BEGIN
     
     num_verif_ped as numeroVerificacion, 
     ruta.fec_desp_hoj_rut as fechaDespacho,
-	CONCAT('de ',ventana.hor_ini_vent_hor,' a ',ventana.hor_fin_vent_hor) as rangoHorario,
+	CONCAT('de ',TIME_FORMAT(ventana.hor_ini_vent_hor,"%l:%i %p"),' a ',TIME_FORMAT(ventana.hor_fin_vent_hor,"%l:%i %p")) as rangoHorario,
     fn_obtener_numero_destinatario(detalle.cod_ped) as numero,
     
     -- NUEVO REQUERIMIENTO
@@ -268,6 +270,9 @@ BEGIN
 	select 
 		ruta.cod_hoj_rut,
         ruta.cod_bod,
+        bodega.nom_bod,
+        bodega.dir_bod,
+        distrito.nom_dist,
 		unidad.num_plac_unid,
 		unidad.num_soat_unid,
 		chofer.nom_chof,
@@ -278,6 +283,8 @@ BEGIN
     inner join tb_unidad_chofer uc on uc.cod_unid_chof = ruta.cod_unid_chof
     inner join tb_unidad unidad on unidad.num_plac_unid = uc.num_placa_unid
     inner join tb_chofer chofer on chofer.num_brev_chof = uc.num_brev_chof
+    inner join tb_bodega bodega on bodega.cod_bod = ruta.cod_bod
+    inner join tb_distrito distrito on distrito.cod_dist = bodega.cod_dist
     where ruta.fec_desp_hoj_rut = pi_fecha_despacho
     and chofer.num_brev_chof = pi_brevete_chofer;
 END$$

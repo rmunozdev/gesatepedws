@@ -19,4 +19,5 @@ public interface DespachoDAO {
 	public boolean registrarAtencion(String codigoRuta, DetalleRuta detalle);
 	public boolean registrarIncumplimiento(String codigoRuta, DetalleRuta detalle);
 	public String getImagen(String codigoRuta, String codigoPedido);
+	public Integer getNumeroVerificacion(String codigoPedido);
 }
