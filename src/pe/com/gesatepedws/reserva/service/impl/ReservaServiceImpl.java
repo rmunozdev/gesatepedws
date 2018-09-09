@@ -1,5 +1,9 @@
 package pe.com.gesatepedws.reserva.service.impl;
 
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +23,8 @@ public class ReservaServiceImpl implements ReservaService {
 	private static final int CODIGO_RESPUESTA_FALLO_VALIDACION = -1;
 	private static final int CODIGO_RESPUESTA_FALLA_DAO = -2;
 	private static final int CODIGO_RESPUESTA_EXITO = 0;
+	
+	private static final Logger logger = Logger.getLogger(ReservaServiceImpl.class);
 	
 	@Autowired
 	private ReservaDAO reservaDAO;
@@ -45,7 +51,6 @@ public class ReservaServiceImpl implements ReservaService {
 				.conFechaDespachoObligatoria()
 				.conFechaDespachoAdecuada()
 				.conDireccionYDistritoDespachoAdecuados()
-				.conTiendaDespachoYFechaRetiroCoherente()
 				.conAlMenosUnDetalle()
 				.conDetallesAdecuados()
 				.conCodigoDistritoExistente()
@@ -78,6 +83,15 @@ public class ReservaServiceImpl implements ReservaService {
 					detalle.setPedido(pedido);
 				}
 				
+				if(pedido.getTiendaDespacho() != null && 
+						pedido.getTiendaDespacho().getCodigo() != null && 
+						!pedido.getTiendaDespacho().getCodigo().isEmpty()) {
+					Date fechaRetiroEnTienda = this.obtenerFechaRetiroEnTienda(pedido);
+					pedido.setFechaRetiroTienda(fechaRetiroEnTienda);
+					logger.info(String.format("Se establecio fecha retiro en tienda: %s para pedido %s", 
+							fechaRetiroEnTienda,pedido.getCodigo()));
+				}
+				
 				if(this.reservaDAO.reservarPedido(pedido)) {
 					response.setCodigo(CODIGO_RESPUESTA_EXITO);
 					response.getMensajes().add("La reserva de pedido fue realizada con éxito");
@@ -99,5 +113,12 @@ public class ReservaServiceImpl implements ReservaService {
 		}
 		return response;
 		
+	}
+	
+	private Date obtenerFechaRetiroEnTienda(Pedido pedido) {
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(pedido.getFechadespacho());
+		calendar.add(Calendar.DATE, 1);
+		return calendar.getTime();
 	}
 }

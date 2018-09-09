@@ -26,7 +26,7 @@ public class DespachoDAOImpl implements DespachoDAO {
 	
 	@Override
 	public Ruta getRuta(String brevete, Date despacho) {
-		Ruta param = new Ruta.Builder(new Date())
+		Ruta param = new Ruta.Builder(despacho)
 				.forChofer(brevete)
 				.build();
 		Ruta ruta = this.gesatepedSession.selectOne("Ruta.getRuta", param);

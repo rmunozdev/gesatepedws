@@ -15,6 +15,7 @@ import pe.com.gesatepedws.model.DetalleRuta;
 import pe.com.gesatepedws.model.MotivoPedido;
 import pe.com.gesatepedws.model.Ruta;
 import pe.com.gesatepedws.model.extend.DespachoResponse;
+import pe.com.gesatepedws.validacion.service.impl.DespachoValidationCode;
 import pe.com.gesatepedws.validacion.service.impl.DespachoValidator;
 
 @Service
@@ -23,6 +24,7 @@ public class DespachoServiceImpl implements DespachoService {
 	private static final int CODIGO_RESPUESTA_EXITO = 1;
 	private static final int CODIGO_RESPUESTA_FALLO_VALIDACION = -1;
 	private static final int CODIGO_RESPUESTA_FALLO_GENERAL = -2;
+	private static final int CODIGO_RESPUESTA_NUMERO_VERIFICACION_INCORRECTO = -3;
 	
 	@Autowired
 	private DespachoDAO despachoDAO;
@@ -67,12 +69,16 @@ public class DespachoServiceImpl implements DespachoService {
 				response.setMensaje("Ocurrió un problema inesperado, "
 						+ "por favor comuníquese con el administrador del servicio");
 			}
+		} else if(validator.getFailMap().containsKey(DespachoValidationCode.NUMERO_VERIFICACION_INCORRECTO)
+				&& validator.getFailMap().get(DespachoValidationCode.NUMERO_VERIFICACION_INCORRECTO)){
+			response.setCodigo(CODIGO_RESPUESTA_NUMERO_VERIFICACION_INCORRECTO);
+			response.setMensaje(DespachoValidationCode.NUMERO_VERIFICACION_INCORRECTO.getMensaje());
 		} else {
 			response.setCodigo(CODIGO_RESPUESTA_FALLO_VALIDACION);
-			Map<String, Boolean> failMap = validator.getFailMap();
-			for(String failName : failMap.keySet()) {
-				if(failMap.get(failName)) {
-					response.getMensajes().add(failName);
+			Map<DespachoValidationCode, Boolean> failMap = validator.getFailMap();
+			for(DespachoValidationCode validation : failMap.keySet()) {
+				if(failMap.get(validation)) {
+					response.getMensajes().add(validation.getMensaje());
 				}
 			}
 		}
@@ -101,10 +107,10 @@ public class DespachoServiceImpl implements DespachoService {
 			}
 		} else {
 			response.setCodigo(CODIGO_RESPUESTA_FALLO_VALIDACION);
-			Map<String, Boolean> failMap = validator.getFailMap();
-			for(String failName : failMap.keySet()) {
-				if(failMap.get(failName)) {
-					response.getMensajes().add(failName);
+			Map<DespachoValidationCode, Boolean> failMap = validator.getFailMap();
+			for(DespachoValidationCode validation : failMap.keySet()) {
+				if(failMap.get(validation)) {
+					response.getMensajes().add(validation.getMensaje());
 				}
 			}
 		}

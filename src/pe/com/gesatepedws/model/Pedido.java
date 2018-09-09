@@ -25,19 +25,18 @@ public class Pedido {
 	private Integer numeroVerificacion;
 	
 	@JsonProperty("fechaSolicitud")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone="GMT-5:00")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone="GMT-5:00")
 	private Date fechaSolicitud;
 	
 	@JsonProperty("fechaVentaPedido")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm", timezone="GMT-5:00")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy HH:mm:ss", timezone="GMT-5:00")
 	private Date fechaVenta;
 	
 	@JsonProperty("fechaDespacho")
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="GMT-5:00")
 	private Date fechadespacho;
 	
-	@JsonProperty("fechaRetiro")
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone="GMT-5:00")
+	
 	private Date fechaRetiroTienda;
 	
 	

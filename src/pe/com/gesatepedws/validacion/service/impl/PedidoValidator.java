@@ -154,20 +154,7 @@ public class PedidoValidator {
 		return this;
 	}
 	
-	public PedidoValidator conTiendaDespachoYFechaRetiroCoherente() {
-		this.failMap.put("Debe ingresar la fecha de retiro", 
-				this.pedido.getTiendaDespacho() != null
-				&& (this.pedido.getFechaRetiroTienda() == null)
-		);
-		
-		this.failMap.put("Debe ingresar la tienda de despacho", 
-				this.pedido.getFechaRetiroTienda() != null 
-				&& (this.pedido.getTiendaDespacho() == null 
-					|| this.pedido.getTiendaDespacho().getCodigo() == null
-					|| this.pedido.getTiendaDespacho().getCodigo().isEmpty()
-				));
-		return this;
-	}
+	
 	
 	public PedidoValidator conDireccionYDistritoDespachoAdecuados() {
 		//Se ignora validacion si es retiro en tiend

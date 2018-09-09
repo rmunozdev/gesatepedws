@@ -12,13 +12,11 @@ public class PedidoJacksonValidationUtils {
 		String fieldName = jsonException.getPath().get(jsonException.getPath().size()-1).getFieldName();
 		switch(fieldName) {
 		case "fechaSolicitud":
-			return "Formato de fecha de solicitud: dd/MM/yyyy HH:mm";
+			return "Formato de fecha de solicitud: dd/MM/yyyy HH:mm:ss";
 		case "fechaVentaPedido":
-			return"Formato de fecha de venta de pedido: dd/MM/yyyy HH:mm";
+			return"Formato de fecha de venta de pedido: dd/MM/yyyy HH:mm:ss";
 		case "fechaDespacho":
 			return "Formato de fecha de despacho: dd/MM/yyyy";
-		case "fechaRetiro":
-			return "Formato de fecha de retiro: dd/MM/yyyy";
 		case "cantidadProducto":
 			return "La cantidad de producto debe ser un número";
 		default:

@@ -11,7 +11,7 @@ public class DespachoValidator {
 	private DetalleRuta detalleRuta;
 	private DespachoDAO datasource;
 	
-	private Map<String,Boolean> failMap;
+	private Map<DespachoValidationCode,Boolean> failMap;
 	
 	public DespachoValidator(DetalleRuta detalleRuta, DespachoDAO datasource) {
 		this.failMap = new HashMap<>();
@@ -20,14 +20,14 @@ public class DespachoValidator {
 	}
 	
 	public DespachoValidator conNumeroVerificacionObligatorio() {
-		this.failMap.put("Debe ingresar número de verificación", 
+		this.failMap.put(DespachoValidationCode.NUMERO_VERIFICACION_OBLIGATORIO, 
 				this.detalleRuta.getPedido() == null || 
 				this.detalleRuta.getPedido().getNumeroVerificacion() == null);
 		return this;
 	}
 	
 	public DespachoValidator conMotivoObligatorio() {
-		this.failMap.put("Debe elegir un motivo para el incumplimiento", 
+		this.failMap.put(DespachoValidationCode.MOTIVO_INCUMPLIMIENTO_OBLIGATORIO, 
 				this.detalleRuta.getPedido() == null || 
 				this.detalleRuta.getMotivo() == null ||
 				this.detalleRuta.getMotivo().getCodigo() == null ||
@@ -41,7 +41,7 @@ public class DespachoValidator {
 			return this;
 		}
 		Integer codigo = this.datasource.getNumeroVerificacion(detalleRuta.getPedido().getCodigo());
-		this.failMap.put("El número de verificación es incorrecto", 
+		this.failMap.put(DespachoValidationCode.NUMERO_VERIFICACION_INCORRECTO, 
 				codigo.intValue() != this.detalleRuta.getPedido().getNumeroVerificacion().intValue());
 		return this;
 	}
@@ -55,7 +55,7 @@ public class DespachoValidator {
 		return true;
 	}
 
-	public Map<String, Boolean> getFailMap() {
+	public Map<DespachoValidationCode, Boolean> getFailMap() {
 		return this.failMap;
 	}
 	
