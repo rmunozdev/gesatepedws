@@ -94,6 +94,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		
 		int smsCounter = 0;
 		int smsFailCounter = 0;
+		int mensajesOmitidos = 0;
 		for (MensajeData mensajeData : mensajes) {
 			//Deben agruparse mensajes para retiro en tienda (por cada bodega)
 			if(mensajeData.getTiendaDespacho() != null) {
@@ -108,6 +109,8 @@ public class NotificacionServiceImpl implements NotificacionService {
 				responses.add(smsResponse);
 				if(smsResponse.getCodigo() == SUCCESS_CODE) {
 					smsCounter++;
+				} else if(smsResponse.getCodigo() == VALIDATION_FAIL_CODE) {
+					mensajesOmitidos++;
 				} else {
 					smsFailCounter++;
 				}
@@ -135,6 +138,7 @@ public class NotificacionServiceImpl implements NotificacionService {
 		logger.info("******** RESUMEN NOTIFICACION ************");
 		logger.info("Total de pedidos procesados: " + responses.size());
 		logger.info("Mensajes SMS enviados con éxito: " + smsCounter);
+		logger.info("Mensajes SMS omitidos por validacion: " + mensajesOmitidos);
 		logger.info("Mensajes SMS fallidos: " + smsFailCounter);
 		logger.info("Email enviados con éxito: " + mailFails);
 		logger.info("Email fallidos: " + (mensajeTiendaMap.size()-mailFails));

@@ -11,6 +11,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
 import pe.com.gesatepedws.parametro.service.ParametroService;
 import pe.com.gesatepedws.sms.service.SMSService;
 
@@ -51,7 +55,14 @@ public class SMSServiceImpl implements SMSService {
 			rd.close();
 			logger.info("SMS Enviado, response: ");
 			logger.info(stringBuffer.toString());
-			return SMSResponseCodes.SUCESS;
+			JsonElement jsonElement = new JsonParser().parse(stringBuffer.toString());
+			JsonObject jsonObject = jsonElement.getAsJsonObject();
+			JsonElement status = jsonObject.get("status");
+			if("success".equals(status.getAsString())) {
+				return SMSResponseCodes.SUCESS;
+			} else {
+				return SMSResponseCodes.FAIL;
+			}
 		} catch(UnknownHostException exception) {
 			logger.error("Falla grave al establecer comunicacion con " + ws_url,exception);
 			throw new IllegalStateException("No se pudo establecer comunicacion", exception);
